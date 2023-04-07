@@ -60,7 +60,7 @@ public class MoveEngine : MonoBehaviour
 
         if (Input.GetKey(leftKey) || Input.GetKey(rightKey))
         {
-            var addTorque = Input.GetKey(rightKey) ? torque : -torque;
+            var addTorque = Input.GetKey(leftKey) ? torque : -torque;
             spring.targetPosition = Math.Max(Math.Min(spring.targetPosition + addTorque, joint.limits.max), joint.limits.min);
         }
         else {

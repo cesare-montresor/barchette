@@ -1,16 +1,38 @@
-# This is a sample Python script.
+import gym
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from baselines import deepq
+from baselines import logger
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 
 
-# Press the green button in the gutter to run the script.
+def main():
+    path = "..\\zibraai_core\\Build\\zibraai_core.exe"
+    env = createUnityEnv(path)
+    run(env)
+
+def policy(observation, agent):
+    return 0
+
+
+def run(env):
+    logger.configure('./logs')  # Change to log in a different directory
+    act = deepq.learn(
+        env # Change to save model in a different directory
+    )
+    print("Saving model to unity_model.pkl")
+    act.save("unity_model.pkl")
+
+def createUnityEnv(path: str):
+    unity_env = UnityEnvironment(path)
+    env = UnityToGymWrapper(unity_env, uint8_visual=True ) #, flatten_branched, allow_multiple_obs)
+    env.reset()
+    return env
+
+
+
+
+
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    main()

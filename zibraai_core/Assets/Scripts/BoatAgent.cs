@@ -13,9 +13,8 @@ using System;
 
 public class BoatAgent : Agent
 {
-    public bool useVecObs;
     EnvironmentParameters m_ResetParams;
-
+       
     Rigidbody m_boat;
     RayPerceptionSensorComponent3D m_sonar, m_lidar;
     RigidBodySensorComponent m_imu;
@@ -28,13 +27,19 @@ public class BoatAgent : Agent
     {
         base.Initialize();
 
-        m_boat = GameObject.Find("boat").GetComponent<Rigidbody>();
-        m_sonar = GameObject.Find("sonar").GetComponent<RayPerceptionSensorComponent3D>();
-        m_lidar = GameObject.Find("lidar").GetComponent<RayPerceptionSensorComponent3D>();
-        m_imu = GameObject.Find("imu").GetComponent<RigidBodySensorComponent>();
+        var parts = GetComponentsInChildren<Rigidbody>();
+        m_boat = parts.Where(part => part.name=="boat").FirstOrDefault();
+
+        var ray_sensors = GetComponentsInChildren<RayPerceptionSensorComponent3D>();
+        m_sonar = ray_sensors.Where(ray_sensor => ray_sensor.name == "sonar").FirstOrDefault();
+        m_lidar = ray_sensors.Where(ray_sensor => ray_sensor.name == "lidar").FirstOrDefault();
+     
+        //m_imu = GameObject.Find("imu").GetComponent<RigidBodySensorComponent>();
         m_engine = GameObject.Find("engine").GetComponent<MoveEngine>();
         m_engineHinge = GameObject.Find("engine").GetComponent<HingeJoint>();
         m_engineSensor = GameObject.Find("engine").GetComponentInChildren<ZibraLiquidDetector>();
+
+        
         
         m_ResetParams = Academy.Instance.EnvironmentParameters;
     }
@@ -67,10 +72,39 @@ public class BoatAgent : Agent
     public override void OnActionReceived(ActionBuffers actions)
     {
         base.OnActionReceived(actions);
+        var action = actions.DiscreteActions.ToArray();
+        if (action[1] != 0)
+        {
+            m_engine.Move();
+        }
+        else if (action[2] != 0)
+        {
+            m_engine.Move(false);
+        }
+        else if (action[3] != 0)
+        {
+            m_engine.TurnLeft();
+        }
+        else if (action[4] != 0)
+        {
+            m_engine.TurnRight();
+        }
+
     }
+    
+    /*
+     * Add Manual Control 
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var continuousActionsOut = actionsOut.ContinuousActions;
+        continuousActionsOut[0] = -Input.GetAxis("Horizontal");
+        continuousActionsOut[1] = Input.GetAxis("Vertical");
+    }
+    */
 
     public override void OnEpisodeBegin()
     {
         base.OnEpisodeBegin();
+        m_engine.Restore();
     }
 }

@@ -23,7 +23,7 @@ public class MoveEngine : MonoBehaviour
     private float targetPosition = 0;
     private Vector3 startPosition;
     private Quaternion startRotation;
-    private Renderer renderer;
+    private new Renderer renderer;
     private HingeJoint joint;
     private Rigidbody parent_rb;
 
@@ -37,7 +37,8 @@ public class MoveEngine : MonoBehaviour
 
 
         startPosition = parent_rb.position;
-        
+        startRotation = parent_rb.rotation;
+
         targetPosition = joint.spring.targetPosition;
         joint.useSpring = true;
         joint.useLimits = true;
@@ -56,12 +57,16 @@ public class MoveEngine : MonoBehaviour
         {
             immersion = 1.0f;
         }
-
+        return immersion;
+    }
+    void UpdateEngineColor()
+    {
+        var immersion = GetImmersion();
         if (immersion > 0.8)
         {
             renderer.material.color = Color.green;
         }
-        else if (immersion > 0.3)
+        else if (immersion > 0.2)
         {
             renderer.material.color = Color.yellow;
         }
@@ -69,10 +74,9 @@ public class MoveEngine : MonoBehaviour
         {
             renderer.material.color = Color.red;
         }
-        return immersion;
     }
 
-    void Push(bool reverse = false)
+    public void Move(bool reverse = false)
     {
         Rigidbody rb = GetComponent<Rigidbody>();
         parent_rb.isKinematic = false;
@@ -85,7 +89,7 @@ public class MoveEngine : MonoBehaviour
         rb.AddRelativeForce(forceVector);
     }
 
-    void TurnLeft()
+    public void TurnLeft()
     {
         var spring = joint.spring;
         var addTorque = Input.GetKey(leftKey) ? torque : -torque;
@@ -94,7 +98,7 @@ public class MoveEngine : MonoBehaviour
 
     }
 
-    void TurnRight()
+    public void TurnRight()
     {
         var spring = joint.spring;
         spring.targetPosition = Math.Max(Math.Min(spring.targetPosition - torque, joint.limits.max), joint.limits.min);
@@ -102,29 +106,28 @@ public class MoveEngine : MonoBehaviour
 
     }
 
-    void TurnNeutral()
+    public void TurnNeutral()
     {
         var spring = joint.spring;
         spring.targetPosition = ((spring.targetPosition - targetPosition) / 2) * 0.01f;
         joint.spring = spring;
     }
 
-    private void Restore()
+    public void Restore()
     {
         parent_rb.isKinematic = true;
-        var startTransform = GetComponentInParent<Transform>();
         parent_rb.position = startPosition;
         parent_rb.rotation = startRotation;
     }
 
     void Update()
     {
-        
-        
+        UpdateEngineColor();
+
         var spring = joint.spring;
         if (Input.GetKey(forwardKey) || Input.GetKey(backwardKey)) {
             var isBackward = Input.GetKey(backwardKey);
-            Push(isBackward);
+            Move(isBackward);
         }
 
         if (Input.GetKey(leftKey))

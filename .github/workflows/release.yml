@@ -51,7 +51,7 @@ jobs:
       id: get_version
       shell: powershell
       run: |
-        $version = echo zibraai_core/VERSION.txt
+        $version = Get-Content -Wait "zibraai_core/VERSION.txt"
         echo "::set-output name=version::$version"
         
         
@@ -59,7 +59,7 @@ jobs:
     - name: Fake build
       shell: powershell
       run: |
-        New-Item -Path 'zibraai_core\Build' -ItemType Directory    
+        New-Item -Path 'zibraai_core/Build' -ItemType Directory    
     
     # Build Unity 
     # Follow instructions at:
@@ -77,7 +77,7 @@ jobs:
     - name: Copy Resources
       shell: powershell
       run: |
-        Copy-Item -Path "zibraai_core\run.sh" -Destination "zibraai_core\Build\run.sh" 
+        Copy-Item -Path "zibraai_core/run.sh" -Destination "zibraai_core/Build/run.sh" 
     
     # Zip Build folder
     - name: Create ZIP

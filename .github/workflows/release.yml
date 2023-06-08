@@ -30,7 +30,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2   
       
-    - name: Fake build
+    - name: Show Root
       shell: cmd
       run: |
         dir
@@ -48,15 +48,7 @@ jobs:
     - name: Fake build
       shell: powershell
       run: |
-        New-Item -Path 'zibraai_core/Build' -ItemType Directory
-        echo "::set-output name=version::$version"
-        
-    # Copy resoruces
-    - name: Copy Resources
-      shell: powershell
-      run: |
-        Copy-Item -Path "zibraai_core/run.sh" -Destination "zibraai_core/Build/run.sh" 
-        
+        New-Item -Path 'zibraai_core/Build' -ItemType Directory    
     
     # Build Unity 
     # Follow instructions at:
@@ -69,6 +61,12 @@ jobs:
     #    UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
     #  with:
     #   targetPlatform: WebGL
+    
+    # Copy resoruces
+    - name: Copy Resources
+      shell: powershell
+      run: |
+        Copy-Item -Path "zibraai_core/run.sh" -Destination "zibraai_core/Build/run.sh" 
     
     # Zip Build folder
     - name: Create ZIP

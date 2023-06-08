@@ -55,6 +55,8 @@ jobs:
         
     
     # Build Unity 
+    # Follow instructions at:
+    # https://game.ci/docs/github/activation/
     #- name: Unity - Builder
     #  uses: game-ci/unity-builder@v2.2.0
     #  env:

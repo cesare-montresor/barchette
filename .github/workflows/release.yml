@@ -24,8 +24,13 @@ env:
 jobs:
   build:
     runs-on: windows-latest
-
-    steps:        
+    
+    steps:      
+    - name: Grab Version
+      shell: powershell
+      run: |
+        Get-Location
+    
     # check code
     - name: Checkout repository
       uses: actions/checkout@v2   

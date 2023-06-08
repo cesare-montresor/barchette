@@ -25,9 +25,21 @@ jobs:
   build:
     runs-on: windows-latest
 
-    steps:         
-    - uses: actions/checkout@v2   
+    steps:        
+    # check code
+    - name: Checkout repository
+      uses: actions/checkout@v2   
+      
+    # read version
+    - name: Grab Version
+      id: get_version
+      shell: powershell
+      run: |
+        $version = echo barchette/zibraai_core/VERSION.txt
+        echo "::set-output name=version::$version"
+        
     
+     
     - name: Unity - Builder
       uses: game-ci/unity-builder@v2.2.0
       env:
@@ -40,20 +52,19 @@ jobs:
     - uses: actions/upload-artifact@v2
       with:
         name: Build
-        path: build
+        path: barchette/zibraai_core/build
+            
     
     - name: Create Release
-      if: ${{ steps.checkTag.outputs.exists }} == false
       id: create_release
       uses: actions/create-release@v1
       with:
         tag_name: "v${{steps.get_version.outputs.version}}"
-        release_name: RazorEnhanced ${{steps.get_version.outputs.version}}
+        release_name: Barchette ${{steps.get_version.outputs.version}}
         draft: false
         prerelease: false
 
     - name: Deploy        
-      if: ${{ steps.checkTag.outputs.exists }} == false
       uses: actions/upload-release-asset@v1
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 

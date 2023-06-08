@@ -30,6 +30,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2   
       
+    - name: Fake build
+      shell: cmd
+      run: |
+        dir
+      
     # read version
     - name: Grab Version
       id: get_version
@@ -50,7 +55,7 @@ jobs:
     - name: Copy Resources
       shell: powershell
       run: |
-        Copy-Item -Path "zibraai_core/run.sh" -Destination "zibraai_core/Build/run.sh" -Recurse
+        Copy-Item -Path "zibraai_core/run.sh" -Destination "zibraai_core/Build/run.sh" 
         
     
     # Build Unity 

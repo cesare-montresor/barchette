@@ -41,7 +41,6 @@ jobs:
         
     # Fake BUILD
     - name: Fake build
-      id: fake build
       shell: powershell
       run: |
         New-Item -Path 'zibraai_core/Build' -ItemType Directory

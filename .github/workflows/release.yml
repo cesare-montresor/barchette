@@ -1,0 +1,62 @@
+# This is a basic workflow to help you get started with Actions
+
+name: AutoRelease
+
+# Controls when the action will run. 
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+  # Triggers the workflow on push or pull request events but only for the release/0.7 branch
+  push:
+    branches: release
+  
+env:
+  # Path to the solution file relative to the root of the project.
+  SOLUTION_FILE_PATH: .
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Configuration type to build.
+  # You can convert this to a build matrix if you need coverage of multiple configuration types.
+  # https://docs.github.com/actions/learn-github-actions/managing-complex-workflows#using-a-build-matrix
+  BUILD_CONFIGURATION: Debug
+  
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:         
+    - uses: actions/checkout@v2   
+    
+    - name: Unity - Builder
+      uses: game-ci/unity-builder@v2.2.0
+      env:
+        UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+        UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+      with:
+       targetPlatform: WebGL
+     
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Build
+        path: build
+    
+    - name: Create Release
+      if: ${{ steps.checkTag.outputs.exists }} == false
+      id: create_release
+      uses: actions/create-release@v1
+      with:
+        tag_name: "v${{steps.get_version.outputs.version}}"
+        release_name: RazorEnhanced ${{steps.get_version.outputs.version}}
+        draft: false
+        prerelease: false
+
+    - name: Deploy        
+      if: ${{ steps.checkTag.outputs.exists }} == false
+      uses: actions/upload-release-asset@v1
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./RazorEnhanced-${{ steps.get_version.outputs.version }}.zip
+        asset_name: RazorEnhanced-${{ steps.get_version.outputs.version }}.zip
+        asset_content_type: application/zip

@@ -56,7 +56,7 @@ jobs:
       id: get_version
       shell: powershell
       run: |
-        $version = Get-Content -Wait "zibraai_core/VERSION.txt"
+        $version = Get-Content "zibraai_core/VERSION.txt"
         echo "::set-output name=version::$version"
         
         

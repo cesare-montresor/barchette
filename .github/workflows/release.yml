@@ -34,6 +34,16 @@ jobs:
       shell: cmd
       run: |
         dir
+        
+    - name: Show zibraai_core
+      shell: cmd
+      run: |
+        dir zibraai_core/
+    
+    - name: Show VERSION
+      shell: cmd
+      run: |
+        echo zibraai_core/VERSION.txt
       
     # read version
     - name: Grab Version
@@ -48,7 +58,7 @@ jobs:
     - name: Fake build
       shell: powershell
       run: |
-        New-Item -Path 'zibraai_core/Build' -ItemType Directory    
+        New-Item -Path 'zibraai_core\Build' -ItemType Directory    
     
     # Build Unity 
     # Follow instructions at:
@@ -66,7 +76,7 @@ jobs:
     - name: Copy Resources
       shell: powershell
       run: |
-        Copy-Item -Path "zibraai_core/run.sh" -Destination "zibraai_core/Build/run.sh" 
+        Copy-Item -Path "zibraai_core\run.sh" -Destination "zibraai_core\Build\run.sh" 
     
     # Zip Build folder
     - name: Create ZIP

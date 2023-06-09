@@ -69,7 +69,7 @@ jobs:
         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
       with:
-       targetPlatform: StandaloneWindows
+       targetPlatform: StandaloneWindows64
        projectPath: zibraai_core/
     #   targetPlatform: StandaloneWindows
     #   targetPlatform: StandaloneWindows64

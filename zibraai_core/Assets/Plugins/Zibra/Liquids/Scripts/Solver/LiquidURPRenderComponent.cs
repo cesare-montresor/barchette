@@ -72,7 +72,6 @@ namespace com.zibra.liquid
 
             int liquidsToRenderCount = 0;
             int backgroundsToCopyCount = 0;
-            int liquidsToVisualizeSDFCount = 0;
             int liquidsToUpscaleCount = 0;
 
             foreach (var liquid in ZibraLiquid.AllFluids)
@@ -87,10 +86,6 @@ namespace com.zibra.liquid
                     if (liquid.IsBackgroundCopyNeeded(camera))
                     {
                         backgroundsToCopyCount++;
-                    }
-                    if (liquid.VisualizeSceneSDF)
-                    {
-                        liquidsToVisualizeSDFCount++;
                     }
                 }
             }
@@ -122,15 +117,6 @@ namespace com.zibra.liquid
                 }
             }
 
-            if (liquidVisualizeSDFPasses == null || liquidVisualizeSDFPasses.Length != liquidsToVisualizeSDFCount)
-            {
-                liquidVisualizeSDFPasses = new LiquidVisualizeSDFPass[liquidsToVisualizeSDFCount];
-                for (int i = 0; i < liquidsToVisualizeSDFCount; ++i)
-                {
-                    liquidVisualizeSDFPasses[i] = new LiquidVisualizeSDFPass(settings.InjectionPoint);
-                }
-            }
-
             if (upscalePasses == null || upscalePasses.Length != liquidsToUpscaleCount)
             {
                 upscalePasses = new LiquidUpscaleURPRenderPass[liquidsToUpscaleCount];
@@ -142,7 +128,6 @@ namespace com.zibra.liquid
 
             int currentCopyPass = 0;
             int currentLiquidPass = 0;
-            int currentVisualizeSDFPass = 0;
             int currentUpscalePass = 0;
 
             foreach (var liquid in ZibraLiquid.AllFluids)
@@ -181,22 +166,6 @@ namespace com.zibra.liquid
 
                     renderer.EnqueuePass(liquidURPPasses[currentLiquidPass]);
                     currentLiquidPass++;
-
-                    if (liquid.VisualizeSceneSDF)
-                    {
-#if UNITY_PIPELINE_URP_10_0_OR_HIGHER
-                        liquidVisualizeSDFPasses[currentVisualizeSDFPass].ConfigureInput(
-                            ScriptableRenderPassInput.Color | ScriptableRenderPassInput.Depth);
-#endif
-#if !UNITY_PIPELINE_URP_9_0_OR_HIGHER
-                        liquidVisualizeSDFPasses[currentVisualizeSDFPass].Setup(renderer, ref renderingData);
-#endif
-                        liquidVisualizeSDFPasses[currentVisualizeSDFPass].liquid = liquid;
-                        liquidVisualizeSDFPasses[currentVisualizeSDFPass].renderPassEvent = settings.InjectionPoint;
-                        renderer.EnqueuePass(liquidVisualizeSDFPasses[currentVisualizeSDFPass]);
-                        currentVisualizeSDFPass++;
-                    }
-
                     if (liquid.EnableDownscale)
                     {
                         upscalePasses[currentUpscalePass].liquid = liquid;
@@ -377,70 +346,6 @@ namespace com.zibra.liquid
             }
         }
 
-        private class LiquidVisualizeSDFPass : ScriptableRenderPass
-        {
-            public ZibraLiquid liquid;
-
-            RenderTargetIdentifier cameraColorTexture;
-
-            static int UpscaleColorTextureID = Shader.PropertyToID("ZibraLiquid_LiquidTempColorTexture");
-            RenderTargetIdentifier UpscaleColorTexture;
-
-            public LiquidVisualizeSDFPass(RenderPassEvent injectionPoint)
-            {
-                renderPassEvent = injectionPoint;
-            }
-
-#if UNITY_PIPELINE_URP_9_0_OR_HIGHER
-            public override void OnCameraSetup(CommandBuffer cmd, ref RenderingData renderingData)
-            {
-                cameraColorTexture = renderingData.cameraData.renderer.cameraColorTarget;
-            }
-#else
-            public void Setup(ScriptableRenderer renderer, ref RenderingData renderingData)
-            {
-                cameraColorTexture = renderer.cameraColorTarget;
-            }
-#endif
-            
-            public override void Configure(CommandBuffer cmd, RenderTextureDescriptor cameraTextureDescriptor)
-            {
-                if (liquid.EnableDownscale)
-                {
-                    UpscaleColorTexture = new RenderTargetIdentifier(UpscaleColorTextureID);
-                    ConfigureTarget(UpscaleColorTexture);
-                }
-                else
-                {
-                    ConfigureTarget(cameraColorTexture);
-                }
-            }
-
-            public override void Execute(ScriptableRenderContext context, ref RenderingData renderingData)
-            {
-                Camera camera = renderingData.cameraData.camera;
-                camera.depthTextureMode = DepthTextureMode.Depth;
-                CommandBuffer cmd = CommandBufferPool.Get("ZibraLiquid.Render");
-
-                ZibraLiquidBridge.SubmitInstanceEvent(cmd,
-                    liquid.CurrentInstanceID, ZibraLiquidBridge.EventID.RenderSDF);
-
-                if (liquid.EnableDownscale)
-                {
-                    cmd.SetRenderTarget(UpscaleColorTexture);
-                }
-                else
-                {
-                    cmd.SetRenderTarget(cameraColorTexture);
-                }
-
-                liquid.RenderSDFVisualization(cmd, camera);
-
-                context.ExecuteCommandBuffer(cmd);
-                CommandBufferPool.Release(cmd);
-            }
-        }
-
         private class LiquidUpscaleURPRenderPass : ScriptableRenderPass
         {
             public ZibraLiquid liquid;
@@ -473,8 +378,6 @@ namespace com.zibra.liquid
         LiquidNativeRenderPass[] liquidNativePasses;
         // 1 pass per rendered liquid
         LiquidURPRenderPass[] liquidURPPasses;
-        // 1 pass per rendered liquid with VisualizeSceneSDF enabled
-        LiquidVisualizeSDFPass[] liquidVisualizeSDFPasses;
         // 1 pass per rendered liquid that have downscale enabled
         LiquidUpscaleURPRenderPass[] upscalePasses;
 #endregion

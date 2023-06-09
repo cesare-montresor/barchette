@@ -1,110 +1,109 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
-using Random = UnityEngine.Random;
 using UnityEngine;
-using Unity.MLAgents.Extensions.Sensors;
-using Unity.VisualScripting;
 using com.zibra.liquid.Manipulators;
 using System.Linq;
-using System;
+using Univr.Barchette.Sensors.GPS;
+using Univr.Barchette.Sensors.IMU;
+using Univr.Barchette.Sensors.Engine;
 
 public class BoatAgent : Agent
 {
-    EnvironmentParameters m_ResetParams;
-       
-    Rigidbody m_boat;
-    RayPerceptionSensorComponent3D m_sonar, m_lidar;
-    RigidBodySensorComponent m_imu;
+    [Header("Sensors")]
+    public bool useLidar = false;
+    public bool useSonar = true;
+    public bool useIMU = true;
+    public bool useGPS = true;
+    public bool useAltitude = true;
+    public bool useCompass = true;
+    public bool useCamera = false;
+    public bool useEngineSensors = true;
 
-    MoveEngine m_engine;
-    HingeJoint m_engineHinge;
-    ZibraLiquidDetector m_engineSensor;
+    [Header("Engine")]
+    public float engineSpeed = 10.0f;
+    public float engineTorque = 10.0f;
+
+    [Header("Manual controls")]
+    public KeyCode forwardKey = KeyCode.W;
+    public KeyCode leftKey = KeyCode.A;
+    public KeyCode backwardKey = KeyCode.S;
+    public KeyCode rightKey = KeyCode.D;
+
+    public KeyCode resetKet = KeyCode.Q;
+
+
+    Rigidbody m_boat;
+    RayPerceptionSensorComponent3D m_sonar;
+    RayPerceptionSensorComponent3D m_lidar;
+    IMUSensorComponent m_imu;
+    GPSSensorComponent m_gps;
+    EngineSensorComponent m_engine_sensor;
+
+    EngineActuator m_engine;
+    
 
     public override void Initialize()
     {
-        base.Initialize();
-
+        //base.Initialize();
+        
         var parts = GetComponentsInChildren<Rigidbody>();
         m_boat = parts.Where(part => part.name=="boat").FirstOrDefault();
 
         var ray_sensors = GetComponentsInChildren<RayPerceptionSensorComponent3D>();
         m_sonar = ray_sensors.Where(ray_sensor => ray_sensor.name == "sonar").FirstOrDefault();
         m_lidar = ray_sensors.Where(ray_sensor => ray_sensor.name == "lidar").FirstOrDefault();
-     
-        //m_imu = GameObject.Find("imu").GetComponent<RigidBodySensorComponent>();
-        m_engine = GameObject.Find("engine").GetComponent<MoveEngine>();
-        m_engineHinge = GameObject.Find("engine").GetComponent<HingeJoint>();
-        m_engineSensor = GameObject.Find("engine").GetComponentInChildren<ZibraLiquidDetector>();
 
+        m_imu = GetComponentsInChildren<IMUSensorComponent>().FirstOrDefault();
+        m_gps = GetComponentsInChildren<GPSSensorComponent>().FirstOrDefault(); 
+
+        m_engine = GetComponentsInChildren<EngineActuator>().FirstOrDefault();
+        m_engine_sensor = GetComponentsInChildren<EngineSensorComponent>().FirstOrDefault();
+
+
+        m_lidar.enabled = useLidar;
+        m_sonar.enabled = useSonar;
+        m_imu.enabled = useIMU;
+        m_gps.useLatLng = useGPS;
+        m_gps.useAltitude = useAltitude;
+        m_gps.useCompass = useCompass;
+        m_engine_sensor.enabled = useEngineSensors;
+
+        m_engine.speed = engineSpeed;
+        m_engine.torque = engineTorque;
         
-        
-        m_ResetParams = Academy.Instance.EnvironmentParameters;
+
     }
+    /*
     public override void CollectObservations(VectorSensor sensor)
-    {
-        base.CollectObservations(sensor);
-        
-        //IMU
-        //m_imu.
-
-        //Lidar
-        var rays = m_lidar.RaySensor.RayPerceptionOutput.RayOutputs;
-        foreach (var ray in rays)
-        {
-            var dist = Vector3.Distance(ray.StartPositionWorld, ray.EndPositionWorld);
-            sensor.AddObservation(dist);
-        }
-
-        //Sonar
-        rays = m_sonar.RaySensor.RayPerceptionOutput.RayOutputs;
-        foreach (var ray in rays)
-        {
-            var dist = Vector3.Distance(ray.StartPositionWorld, ray.EndPositionWorld);
-            sensor.AddObservation(dist);
-        }
-
-
-    }
-
+    { }
+      */
     public override void OnActionReceived(ActionBuffers actions)
     {
-        base.OnActionReceived(actions);
-        var action = actions.DiscreteActions.ToArray();
-        if (action[1] != 0)
-        {
-            m_engine.Move();
-        }
-        else if (action[2] != 0)
-        {
-            m_engine.Move(false);
-        }
-        else if (action[3] != 0)
-        {
-            m_engine.TurnLeft();
-        }
-        else if (action[4] != 0)
-        {
-            m_engine.TurnRight();
-        }
-
+        // base.OnActionReceived(actions);
+        var action = actions.DiscreteActions;
+        if (action[0] == 1) { m_engine.Forward(); }
+        if (action[0] == 2) { m_engine.Backward(); }
+        if (action[0] == 3) { m_engine.TurnLeft(); }
+        if (action[0] == 4) { m_engine.TurnRight(); }
     }
     
-    /*
-     * Add Manual Control 
+    
+    
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var continuousActionsOut = actionsOut.ContinuousActions;
-        continuousActionsOut[0] = -Input.GetAxis("Horizontal");
-        continuousActionsOut[1] = Input.GetAxis("Vertical");
+        var action = actionsOut.DiscreteActions;
+
+        action[0] = 0;
+        if      (Input.GetKey(forwardKey))  { action[0] = 1; }
+        else if (Input.GetKey(backwardKey)) { action[0] = 2; }
+        else if (Input.GetKey(leftKey))     { action[0] = 3; }
+        else if (Input.GetKey(rightKey))    { action[0] = 4; }
     }
-    */
+    
 
     public override void OnEpisodeBegin()
     {
-        base.OnEpisodeBegin();
         m_engine.Restore();
     }
 }

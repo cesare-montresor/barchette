@@ -5,7 +5,6 @@
         <ui:Button name="validateAuthKeyBtn" text="Check Authentication Key"/>
         <ui:Label name="validationProgress" text=""/>
         <ui:Label name="registeredKeyLabel" text="Product is registered"/>
-        <ui:Button name="removeAuthKeyBtn" text="Remove Authentication Key"/>
     </com.zibra.liquid.Foundation.UIElements.SettingsBlock>
     <com.zibra.liquid.Foundation.UIElements.SettingsBlock label="Who we are">
         <ui:Label text="We take 3D processing to the next level with an AI-based approach. It brings in-game physics improvement, graphics optimization, and 3D content generation.&#10;&#10;We’re bringing a new level of interactive, realistic, and high-quality visual effects to low-end PCs and even mobile devices by applying AI to represent 3D geometry.&#10;&#10;" name="descriptionWhoWeAre" class="description" />

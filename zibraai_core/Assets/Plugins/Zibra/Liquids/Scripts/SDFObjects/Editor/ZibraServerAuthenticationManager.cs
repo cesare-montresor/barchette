@@ -50,7 +50,6 @@ namespace com.zibra.liquid.Editor.SDFObjects
             KeyValidationInProgress,
             NetworkError,
             NotRegistered,
-            InvalidKey,
             NotInitialized,
 #if ZIBRA_LIQUID_PRO_VERSION
             NoMaintance,
@@ -105,7 +104,7 @@ namespace com.zibra.liquid.Editor.SDFObjects
                 return "License key validation in progress. Please wait.";
             case Status.NetworkError:
                 return "Network error. Please try again later.";
-            case Status.InvalidKey:
+            case Status.NotRegistered:
                 return "License key is invalid.";
 #if ZIBRA_LIQUID_PRO_VERSION
             case Status.Expired:
@@ -142,19 +141,6 @@ namespace com.zibra.liquid.Editor.SDFObjects
             SendRequest(key);
         }
 
-        /// <summary>
-        ///     Removes current license key 
-        ///     and prevents automatic key querying until next domain reload.
-        /// </summary>
-        public void RemoveKey()
-        {
-            EditorPrefs.DeleteKey("ZibraLiquidLicenceKey");
-            PluginLicenseKey = "";
-            IsLicenseKeyValid = false;
-            CurrentStatus = Status.NotInitialized;
-            PreventRenewal = true;
-        }
-
 #endregion
 #region Implementation details
         private ZibraServerAuthenticationManager()
@@ -168,14 +154,13 @@ namespace com.zibra.liquid.Editor.SDFObjects
 
         private const string BASE_URL = "https://generation.zibra.ai/";
  #if ZIBRA_LIQUID_PRO_VERSION
-         private const string BASE_PRO_URL = "https://license.zibra.ai/";
-         private const string VERSION_DATE = "2022.11.25";
+        private const string BASE_PRO_URL = "https://license.zibra.ai/";
+        private const string VERSION_DATE = "";
  #endif
         private string UserHardwareID = "";
         private string UserID = "";
         private UnityWebRequestAsyncOperation Request;
         private bool IsLicenseKeyValid = false;
-        private bool PreventRenewal = false;
 
         private Status CurrentStatus = Status.NotInitialized;
 
@@ -208,7 +193,7 @@ namespace com.zibra.liquid.Editor.SDFObjects
                 // check if key is valid
                 requestURL = GetValidationURL(key);
             }
-            else if (UserID != "" && !PreventRenewal)
+            else if (UserID != "")
             {
                 // request new key based on User and Hardware ID
                 requestURL = GetRenewalKeyURL();
@@ -238,11 +223,9 @@ namespace com.zibra.liquid.Editor.SDFObjects
         private void Initialize()
         {
 #if ZIBRA_LIQUID_PRO_VERSION && !ZIBRA_LIQUID_PRO_VERSION_NO_LICENSE_CHECK
-            if (ZibraLiquidBridge.IsLicenseValidated() != 0 && !PreventRenewal)
+            if (ZibraLiquidBridge.IsLicenseValidated() != 0)
             {
                 CurrentStatus = Status.OK;
-                CollectUserInfo();
-                PluginLicenseKey = GetEditorPrefsLicenceKey();
                 GenerationURL = CreateGenerationRequestURL("compute");
                 return;
             }
@@ -290,7 +273,7 @@ namespace com.zibra.liquid.Editor.SDFObjects
             LicenseKeyResponse parsedResponse = JsonUtility.FromJson<LicenseKeyResponse>(response);
             if (parsedResponse.signature == null || parsedResponse.license_info == null)
             {
-                CurrentStatus = Status.InvalidKey;
+                CurrentStatus = Status.NotRegistered;
                 return;
             }
 
@@ -333,7 +316,7 @@ namespace com.zibra.liquid.Editor.SDFObjects
                 CurrentStatus = Status.Expired;
                 return;
             default:
-                CurrentStatus = Status.InvalidKey;
+                CurrentStatus = Status.NotRegistered;
                 return;
             }
 
@@ -348,7 +331,7 @@ namespace com.zibra.liquid.Editor.SDFObjects
 
             if (apiKey == "")
             {
-                CurrentStatus = Status.InvalidKey;
+                CurrentStatus = Status.NotRegistered;
                 return;
             }
 

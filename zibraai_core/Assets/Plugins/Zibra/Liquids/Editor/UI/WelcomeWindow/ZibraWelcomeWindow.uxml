@@ -14,7 +14,7 @@
                 <ui:Label text="Plugin Info" class="free-only" />
             </ui:Button>
             <ui:Button tabindex="-1" name="OnePager" class="hyperlink" style="height: 25px; font-size: 16px;">
-                <ui:Label tabindex="-1" display-tooltip-when-elided="true" class="icon icon-hyperlink" />
+                <ui:Label tabindex="-1" display-tooltip-when-elided="true" class="icon icon-docs" />
                 <ui:Label text="Plugin description" />
             </ui:Button>
             <ui:Button tabindex="-1" name="Discord" class="hyperlink" style="height: 25px; font-size: 16px;">

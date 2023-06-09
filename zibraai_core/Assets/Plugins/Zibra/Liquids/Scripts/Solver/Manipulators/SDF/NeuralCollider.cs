@@ -14,13 +14,8 @@ namespace com.zibra.liquid.SDFObjects
     [Obsolete]
     public class NeuralCollider : ZibraLiquidCollider
     {
-        // We only use it in Editor
-        // but we shouldn't put serialized fields
-        // inside #if UNITY_EDITOR
-#pragma warning disable 0414
         [SerializeField]
         private bool InvertSDF = false;
-#pragma warning restore 0414
 
 #if UNITY_EDITOR
         private void Awake()

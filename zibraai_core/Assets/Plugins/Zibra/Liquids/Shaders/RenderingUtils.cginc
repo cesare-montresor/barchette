@@ -13,13 +13,7 @@ Texture3D<float4> GridDensity;
 SamplerState samplerGridDensity;
 float FetchGridDensity(float3 uvw)
 {
-    // Unity 2020.3 seems to have a bug and doesn't bind more than 8 textures
-    // Also, same bugs happen in builds in newer versions too
-    // To work around that we need to decrease number of used textures to 8
-    // So we save 1 slot by re-using bound normals texture
-    // So we skipping density texture
-    // Technically not same data, but works for current usecase
-    return GridNormals.SampleLevel(samplerGridNormals, uvw, 0).w;
+    return GridDensity.SampleLevel(samplerGridDensity, uvw, 0);
 }
 
 float3 RayDepths;
@@ -148,7 +142,7 @@ float3 IntegrateAbsorptionScattering(float opticalDensity, float3 incomingLight,
     return Sint + incomingLight * extinction;
 }
 
-float SampleDensity(float3 pos)
+float4 SampleDensity(float3 pos)
 {
     return FetchGridDensity(WorldToUVW(pos));
 }

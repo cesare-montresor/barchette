@@ -44,13 +44,12 @@ namespace com.zibra.liquid.Manipulators
         }
 #endif
 #endregion
-#region Implementaion details
+
         private void Update()
         {
             AdditionalData0.y = TargetSpecie;
             AdditionalData0.z = Probability;
         }
-#endregion
     }
 }
 

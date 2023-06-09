@@ -100,27 +100,12 @@ namespace com.zibra.liquid.Editor.Solver
 
             serializedObject.Update();
 
-            bool needForceDirection = false;
-
-            foreach (var instance in ForceFieldInstances)
-            {
-                if (instance.Type == ZibraLiquidForceField.ForceFieldType.Directional ||
-                    instance.Type == ZibraLiquidForceField.ForceFieldType.Swirl)
-                {
-                    needForceDirection = true;
-                    break;
-                }
-            }
-
             EditorGUILayout.PropertyField(Type);
             EditorGUILayout.PropertyField(Strength);
             EditorGUILayout.PropertyField(DistanceDecay);
             EditorGUILayout.PropertyField(DistanceOffset);
             EditorGUILayout.PropertyField(DisableForceInside);
-            if (needForceDirection)
-            {
-                EditorGUILayout.PropertyField(ForceDirection);
-            }
+            EditorGUILayout.PropertyField(ForceDirection);
 #if ZIBRA_LIQUID_PRO_VERSION
             EditorGUILayout.PropertyField(CurrentInteractionMode);
             EditorGUILayout.PropertyField(ParticleSpecies);

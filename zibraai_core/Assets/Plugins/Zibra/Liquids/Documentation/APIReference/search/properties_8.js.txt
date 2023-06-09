@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['simulationinternalframe_0',['SimulationInternalFrame',['../classcom_1_1zibra_1_1liquid_1_1_solver_1_1_zibra_liquid.html#ab372eb0691785420d7d9f5f9a6fad33b',1,'com::zibra::liquid::Solver::ZibraLiquid']]],
-  ['simulationinternaltime_1',['SimulationInternalTime',['../classcom_1_1zibra_1_1liquid_1_1_solver_1_1_zibra_liquid.html#a7f55e56e8e512bd64f9f5aa3ed880ccb',1,'com::zibra::liquid::Solver::ZibraLiquid']]],
-  ['solverparameters_2',['SolverParameters',['../classcom_1_1zibra_1_1liquid_1_1_solver_1_1_zibra_liquid.html#a74d8bd84ac007c5b1700c503cbdcecaa',1,'com::zibra::liquid::Solver::ZibraLiquid']]]
+  ['particlenumber_0',['ParticleNumber',['../classcom_1_1zibra_1_1liquid_1_1_solver_1_1_zibra_liquid.html#a3dea983739a2833478dff39458fb5475',1,'com::zibra::liquid::Solver::ZibraLiquid']]],
+  ['particlesinside_1',['ParticlesInside',['../classcom_1_1zibra_1_1liquid_1_1_manipulators_1_1_zibra_liquid_detector.html#a64ba7d5d36ac1bf89730ae3b2aeb0032',1,'com::zibra::liquid::Manipulators::ZibraLiquidDetector']]],
+  ['pluginlicensekey_2',['PluginLicenseKey',['../classcom_1_1zibra_1_1liquid_1_1_editor_1_1_s_d_f_objects_1_1_zibra_server_authentication_manager.html#a625ea6ac27febac598d604077cc58dc2',1,'com::zibra::liquid::Editor::SDFObjects::ZibraServerAuthenticationManager']]],
+  ['positionmass_3',['PositionMass',['../classcom_1_1zibra_1_1liquid_1_1_solver_1_1_zibra_liquid.html#a6ba6ae973b4b8293c6e6af83ae941aa0',1,'com::zibra::liquid::Solver::ZibraLiquid']]]
 ];

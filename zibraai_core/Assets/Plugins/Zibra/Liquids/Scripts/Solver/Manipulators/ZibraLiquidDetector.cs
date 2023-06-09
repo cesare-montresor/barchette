@@ -41,6 +41,26 @@ namespace com.zibra.liquid.Manipulators
         /// </remarks>
         public int ParticlesInside { get; internal set; } = 0;
 
+        /// <summary>
+        ///     Bottom left corner of 3D bounding box of detected liquid (in world coordinates).
+        /// </summary>
+        /// <remarks>
+        ///     <para>
+        ///         If no liquid was detected, this field will be set to zeros and the whole bounding box area will equal 0.
+        ///     </para>
+        /// </remarks>
+        public Vector3 BoundingBoxMin { get; internal set; } = new Vector3(0.0f, 0.0f, 0.0f);
+
+        /// <summary>
+        ///     Top right corner of 3D bounding box of detected liquid (in world coordinates).
+        /// </summary>
+        /// <remarks>
+        ///     <para>
+        ///         If no liquid was detected, this field will be set to zeros and the whole bounding box area will equal 0.
+        ///     </para>
+        /// </remarks>
+        public Vector3 BoundingBoxMax { get; internal set; } = new Vector3(0.0f, 0.0f, 0.0f);
+
         public override ManipulatorType GetManipulatorType()
         {
             return ManipulatorType.Detector;
@@ -112,6 +132,20 @@ namespace com.zibra.liquid.Manipulators
         {
             ObjectVersion = 2;
             UnityEditor.SceneManagement.EditorSceneManager.sceneOpened -= OnSceneOpened;
+        }
+
+        private void OnDrawGizmosSelected()
+        {
+            if (ParticlesInside > 0)
+            {
+                Gizmos.color = Color.blue;
+                Gizmos.DrawWireCube((BoundingBoxMax + BoundingBoxMin) / 2, (BoundingBoxMax - BoundingBoxMin));
+            }
+        }
+
+        private void OnDrawGizmos()
+        {
+            OnDrawGizmosSelected();
         }
 #endif
 #endregion

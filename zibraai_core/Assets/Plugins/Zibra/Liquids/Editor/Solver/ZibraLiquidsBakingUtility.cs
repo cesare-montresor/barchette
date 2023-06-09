@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEditor;
 using com.zibra.liquid.Solver;
+using com.zibra.liquid.Analytics;
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 using System.IO;
@@ -58,12 +59,6 @@ namespace com.zibra.liquid.Editor.Solver
 
         public void OnDisable()
         {
-            if (liquidInstance && liquidInstance.Initialized)
-            {
-                liquidInstance.ReleaseSimulation();
-                SceneView.RepaintAll();
-            }
-
             EditorApplication.playModeStateChanged -= StateChangeHandler;
             EditorSceneManager.sceneOpened -= SceneOpenedCallback;
             EditorApplication.update -= EditorUpdate;
@@ -181,6 +176,8 @@ namespace com.zibra.liquid.Editor.Solver
             liquidInstance.InitialState = ZibraLiquid.InitialStateType.BakedLiquidState;
             liquidInstance.BakedInitialStateAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(path);
             UnityEditor.EditorUtility.SetDirty(liquidInstance);
+
+            ZibraLiquidAnalyticsData.TrackBakedStateSaved();
         }
 
         private IEnumerator RunSimulation()

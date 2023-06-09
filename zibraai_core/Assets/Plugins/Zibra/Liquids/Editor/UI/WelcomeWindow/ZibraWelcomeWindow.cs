@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
+using com.zibra.liquid.Solver;
 
 namespace com.zibra.liquid.Editor
 {
@@ -17,7 +18,9 @@ namespace com.zibra.liquid.Editor
         [InitializeOnLoadMethod]
         internal static void InitializeOnLoad()
         {
-            string PrefsKey = "ZibraLiquidsWelcomeScreenSeenV2";
+            string PrefsKey = "ZibraLiquidsWelcomeScreenSeen";
+
+            PrefsKey += ZibraLiquid.PluginVersion;
 
 #if ZIBRA_LIQUID_FREE_VERSION
             PrefsKey += "Free";

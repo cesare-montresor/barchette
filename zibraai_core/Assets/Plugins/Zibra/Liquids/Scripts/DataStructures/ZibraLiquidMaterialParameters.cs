@@ -273,9 +273,8 @@ namespace com.zibra.liquid.DataStructures
         /// </remarks>
         [Tooltip("Foam spawn threshold")]
         [FormerlySerializedAs("FoamDensity")]
-        [FormerlySerializedAs("FoamAmount")]
         [Range(0.0f, 1.0f)]
-        public float FoamingThreshold = 1.0f;
+        public float FoamAmount = 1.0f;
 
         /// <summary>
         ///     (Pro version only) Enables projection of optional noise texture on foam.

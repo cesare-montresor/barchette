@@ -2,6 +2,9 @@ using com.zibra.liquid.DataStructures;
 using com.zibra.liquid.Manipulators;
 using com.zibra.liquid.SDFObjects;
 using com.zibra.liquid.Utilities;
+#if UNITY_EDITOR
+using com.zibra.liquid.Analytics;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -78,7 +81,7 @@ namespace com.zibra.liquid.Solver
         /// <remarks>
         ///     This is the version that liquid assemblies will have
         /// </remarks>
-        public const string PluginVersionStandard = "1.5.1.0";
+        public const string PluginVersionStandard = "1.5.2.0";
 
         /// <summary>
         ///     Zibra Liquids version in human readable form.
@@ -91,7 +94,7 @@ namespace com.zibra.liquid.Solver
         ///         May contain arbitrary text depending on the version.
         ///     </para>
         /// </remarks>
-        public const string PluginVersion = "1.5.1";
+        public const string PluginVersion = "1.5.2";
 
         /// <summary>
         ///     A list of all enabled instances of this component.
@@ -706,11 +709,6 @@ namespace com.zibra.liquid.Solver
         ///         so will have to switch to Unity Render mode in order for VR to work.
         ///     </para>
         ///     <para>
-        ///         Changing this parameter when liquid is initialized has no effect.
-        ///         During initialization we allocate different set of resources based on render mode.
-        ///         So changing render mode requires re-initialization.
-        ///     </para>
-        ///     <para>
         ///         See User Guide for more details.
         ///     </para>
         /// </remarks>
@@ -960,79 +958,29 @@ namespace com.zibra.liquid.Solver
         ///     </para>
         /// </remarks>
         [FormerlySerializedAs("visualizeSceneSDF")]
-        [Tooltip("Whether to render visualized SDFs")]
+        [Tooltip("Whether to render visualised SDFs")]
         public bool VisualizeSceneSDF = false;
 
         /// <summary>
         ///     Reference to <see cref="DataStructures::ZibraLiquidSolverParameters">ZibraLiquidSolverParameters</see>
-        ///     corresponding to this object.
+        ///     corersponding to this object.
         /// </summary>
-        public ZibraLiquidSolverParameters SolverParameters { 
-            get
-            {
-                if (SolverParametersInternal == null)
-                {
-                    SolverParametersInternal = gameObject.GetComponent<ZibraLiquidSolverParameters>();
-                    if (SolverParametersInternal == null)
-                    {
-                        SolverParametersInternal = gameObject.AddComponent<ZibraLiquidSolverParameters>();
-#if UNITY_EDITOR
-                        UnityEditor.EditorUtility.SetDirty(this);
-#endif
-                    }
-                }
-                return SolverParametersInternal; 
-            } 
-        }
+        public ZibraLiquidSolverParameters SolverParameters { get; private set; }
 
         /// <summary>
         ///     Reference to
         ///     <see cref="DataStructures::ZibraLiquidMaterialParameters">ZibraLiquidMaterialParameters</see>
-        ///     corresponding to this object.
+        ///     corersponding to this object.
         /// </summary>
-        public ZibraLiquidMaterialParameters MaterialParameters
-        {
-            get
-            {
-                if (MaterialParametersInternal == null)
-                {
-                    MaterialParametersInternal = gameObject.GetComponent<ZibraLiquidMaterialParameters>();
-                    if (MaterialParametersInternal == null)
-                    {
-                        MaterialParametersInternal = gameObject.AddComponent<ZibraLiquidMaterialParameters>();
-#if UNITY_EDITOR
-                        UnityEditor.EditorUtility.SetDirty(this);
-#endif
-                    }
-                }
-                return MaterialParametersInternal;
-            }
-        }
+        public ZibraLiquidMaterialParameters MaterialParameters { get; private set; }
 
         /// <summary>
         ///     Reference to
         ///     <see
         ///     cref="DataStructures::ZibraLiquidAdvancedRenderParameters">ZibraLiquidAdvancedRenderParameters</see>
-        ///     corresponding to this object.
+        ///     corersponding to this object.
         /// </summary>
-        public ZibraLiquidAdvancedRenderParameters AdvancedRenderParameters
-        {
-            get
-            {
-                if (AdvancedRenderParametersInternal == null)
-                {
-                    AdvancedRenderParametersInternal = gameObject.GetComponent<ZibraLiquidAdvancedRenderParameters>();
-                    if (AdvancedRenderParametersInternal == null)
-                    {
-                        AdvancedRenderParametersInternal = gameObject.AddComponent<ZibraLiquidAdvancedRenderParameters>();
-#if UNITY_EDITOR
-                        UnityEditor.EditorUtility.SetDirty(this);
-#endif
-                    }
-                }
-                return AdvancedRenderParametersInternal;
-            }
-        }
+        public ZibraLiquidAdvancedRenderParameters AdvancedRenderParameters { get; private set; }
 
         /// <summary>
         ///     Liquid container size.
@@ -1106,7 +1054,7 @@ namespace com.zibra.liquid.Solver
         ///     </para>
         ///     <para>
         ///         Has no effect when liquid is initialized, since you can't modify
-        ///         aforementioned parameters in this case.
+        ///         aformentioned parameters in this case.
         ///     </para>
         /// </remarks>
         public void UpdateSimulationConstants()
@@ -1327,15 +1275,12 @@ namespace com.zibra.liquid.Solver
 
             foreach (var collider in SDFColliders)
             {
-                if (collider == null)
-                {
-                    continue;
-                }
-
                 var sdf = collider.gameObject.GetComponent<SDFObject>();
                 if (sdf)
                     result += sdf.GetVRAMFootprint();
             }
+
+            int ManipSize = Marshal.SizeOf(typeof(ZibraManipulatorManager.ManipulatorParam));
 
             return result;
         }
@@ -1401,14 +1346,6 @@ namespace com.zibra.liquid.Solver
 
             try
             {
-#if UNITY_IOS
-                if (SystemInfo.graphicsDeviceName == "Apple iOS simulator GPU")
-                {
-                    throw new Exception("Zibra Liquids doesn't support iOS simulator. " +
-                                        "Liquid was disabled.");
-                }
-#endif
-
 #if ZIBRA_LIQUID_PRO_VERSION && !ZIBRA_LIQUID_PRO_VERSION_NO_LICENSE_CHECK && UNITY_EDITOR
                 if (!ZibraServerAuthenticationManager.GetInstance().IsLicenseVerified())
                 {
@@ -1419,21 +1356,18 @@ namespace com.zibra.liquid.Solver
                 }
 #endif
 
-                // Copy Rendering Mode to internal variable to prevent user from modifying it during liquid lifetime
-                ActiveRenderingMode = CurrentRenderingMode;
-
 #if UNITY_PIPELINE_HDRP
                 if (RenderPipelineDetector.GetRenderPipelineType() == RenderPipelineDetector.RenderPipeline.HDRP)
                 {
                     bool missingRequiredParameter = false;
 
-                    if (CustomLightHDRP == null && ActiveRenderingMode != RenderingMode.UnityRender)
+                    if (CustomLightHDRP == null && CurrentRenderingMode != RenderingMode.UnityRender)
                     {
                         Debug.LogError("No Custom Light set in Zibra Liquid.");
                         missingRequiredParameter = true;
                     }
 
-                    if (ReflectionProbeHDRP == null && ActiveRenderingMode != RenderingMode.UnityRender)
+                    if (ReflectionProbeHDRP == null && CurrentRenderingMode != RenderingMode.UnityRender)
                     {
                         Debug.LogError("No reflection probe added to Zibra Liquid.");
                         missingRequiredParameter = true;
@@ -1522,6 +1456,10 @@ namespace com.zibra.liquid.Solver
                 InitializeSolver();
 
                 Initialized = true;
+
+#if UNITY_EDITOR
+                ZibraLiquidAnalyticsData.TrackLiquidInitialization(this);
+#endif
             }
             catch (Exception)
             {
@@ -1633,15 +1571,7 @@ namespace com.zibra.liquid.Solver
         /// </returns>
         public GameObject UpdateUnityRender()
         {
-            // This function can be called independently of whether liquid is initialized or not
-            // So need special care when querying rendering mode
-            RenderingMode effectiveRenderingMode = CurrentRenderingMode;
-            if (Initialized)
-            {
-                effectiveRenderingMode = ActiveRenderingMode;
-            }
-
-            if (effectiveRenderingMode == RenderingMode.UnityRender)
+            if (CurrentRenderingMode == RenderingMode.UnityRender)
             {
                 Transform meshTransform = transform.Find("ZibraLiquidMesh");
 
@@ -1665,6 +1595,7 @@ namespace com.zibra.liquid.Solver
                 {
                     meshObject.AddComponent(typeof(MeshRenderer));
                     MeshRenderer meshRenderer = meshObject.GetComponent<MeshRenderer>();
+                    // TODO make a custom liquid material
                     meshRenderer.material = new Material(Shader.Find("Diffuse"));
                     meshRenderer.enabled = true;
                 }
@@ -2327,29 +2258,7 @@ namespace com.zibra.liquid.Solver
 #endif
         }
 
-        private ZibraLiquidSolverParameters SolverParametersInternal;
-        private ZibraLiquidMaterialParameters MaterialParametersInternal;
-        private ZibraLiquidAdvancedRenderParameters AdvancedRenderParametersInternal;
-
-        private ZibraManipulatorManager ManipulatorManagerInternal;
-        internal ZibraManipulatorManager ManipulatorManager
-        {
-            get
-            {
-                if (ManipulatorManagerInternal == null)
-                {
-                    ManipulatorManagerInternal = gameObject.GetComponent<ZibraManipulatorManager>();
-                    if (ManipulatorManagerInternal == null)
-                    {
-                        ManipulatorManagerInternal = gameObject.AddComponent<ZibraManipulatorManager>();
-#if UNITY_EDITOR
-                        UnityEditor.EditorUtility.SetDirty(this);
-#endif
-                    }
-                }
-                return ManipulatorManagerInternal;
-            }
-        }
+        internal ZibraManipulatorManager ManipulatorManager { get; private set; }
 
         [NonSerialized]
         private Vector2Int CurrentTextureResolution = new Vector2Int(0, 0);
@@ -2441,7 +2350,7 @@ namespace com.zibra.liquid.Solver
         {
             // We need at least 2 simulation frames before we can start rendering
             return Initialized && RunRendering && (SimulationInternalFrame > 1) &&
-                   (ActiveRenderingMode != RenderingMode.UnityRender || VisualizeSceneSDF);
+                   (CurrentRenderingMode != RenderingMode.UnityRender || VisualizeSceneSDF);
         }
 
         private bool IsSimulationEnabled()
@@ -2480,7 +2389,7 @@ namespace com.zibra.liquid.Solver
             // For whatever reason, Unity sometimes doesn't close command encoder when we request it from native plugin
             // So when we try to start our command encoder with active encoder already present it leads to crash
             // This happens when scene have Terrain (I still have no idea why)
-            // So we force change command encoder like that, and this one closes gracefully
+            // So we force change command encoder like that, and this one closes gracefuly
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Metal)
             {
                 cmdList.SetRenderTarget(Color0);
@@ -2543,6 +2452,10 @@ namespace com.zibra.liquid.Solver
 
         private void Awake()
         {
+            MaterialParameters = gameObject.GetComponent<ZibraLiquidMaterialParameters>();
+            SolverParameters = gameObject.GetComponent<ZibraLiquidSolverParameters>();
+            AdvancedRenderParameters = gameObject.GetComponent<ZibraLiquidAdvancedRenderParameters>();
+            ManipulatorManager = gameObject.GetComponent<ZibraManipulatorManager>();
             SetupScriptableRenderComponent();
         }
 
@@ -2818,6 +2731,7 @@ namespace com.zibra.liquid.Solver
                 new ComputeBuffer(1, Marshal.SizeOf(typeof(ParticleSpeciesParameters)));
 #endif
 
+            // TODO: Test LDS atomics + global atomic vs AppendBuffer performance
             Counters = new ComputeBuffer(8, sizeof(uint));
 
             VertexIDGrid = new ComputeBuffer(GridNodeCount, sizeof(int));
@@ -2827,7 +2741,7 @@ namespace com.zibra.liquid.Solver
             TransferDataBuffer = new ComputeBuffer(1, sizeof(uint));
             MeshRenderIndexBuffer = CreateGraphicsBuffer(GraphicsBufferType.Index, 3 * GridNodeCount, sizeof(uint));
 
-            if (ActiveRenderingMode == RenderingMode.UnityRender)
+            if (CurrentRenderingMode == RenderingMode.UnityRender)
             {
                 LiquidMesh = new Mesh();
 
@@ -2939,7 +2853,7 @@ namespace com.zibra.liquid.Solver
             registerSolverBuffersBridgeParams.GridDensity = MakeTextureNativeBridge(DensityTexture);
             registerSolverBuffersBridgeParams.GridVelocity = MakeTextureNativeBridge(VelocityTexture);
             registerSolverBuffersBridgeParams.GridNormals = MakeTextureNativeBridge(GridNormalTexture);
-            if (ActiveRenderingMode == RenderingMode.UnityRender)
+            if (CurrentRenderingMode == RenderingMode.UnityRender)
             {
                 registerSolverBuffersBridgeParams.UnityMeshVertexBuffer = LiquidMesh.GetNativeVertexBufferPtr(0);
                 registerSolverBuffersBridgeParams.UnityMeshIndexBuffer = LiquidMesh.GetNativeIndexBufferPtr();
@@ -3280,7 +3194,7 @@ namespace com.zibra.liquid.Solver
         }
 
         /// <summary>
-        ///     Removes disabled/inactive cameras from cameraResources
+        /// Removes disabled/inactive cameras from cameraResources
         /// </summary>
         private void UpdateCameraList()
         {
@@ -3317,8 +3231,9 @@ namespace com.zibra.liquid.Solver
         }
 
         /// <summary>
-        ///     Update Native textures for a given camera
+        /// Update Native textures for a given camera
         /// </summary>
+        /// <param name="cam">Camera</param>
         private bool UpdateNativeTextures(Camera cam, float renderPipelineRenderScale)
         {
             UpdateCameraList();
@@ -3331,6 +3246,7 @@ namespace com.zibra.liquid.Solver
 
             if (!Cameras.Contains(cam))
             {
+                // add camera to list
                 Cameras.Add(cam);
             }
 
@@ -3378,6 +3294,7 @@ namespace com.zibra.liquid.Solver
             isGlobalTexturesDirty = CreateTexture(ref Color0, textureResolution, true, FilterMode.Point, 0,
                                                   RenderTextureFormat.ARGBFloat, true) ||
                                     isGlobalTexturesDirty;
+            // TODO skip creation if not used
             isGlobalTexturesDirty = CreateTexture(ref Color1, textureResolution, true, FilterMode.Point, 0,
                                                   RenderTextureFormat.ARGBFloat, true) ||
                                     isGlobalTexturesDirty;
@@ -3429,7 +3346,7 @@ namespace com.zibra.liquid.Solver
         }
 
         /// <summary>
-        ///     Render the liquid from the native plugin
+        /// Render the liquid from the native plugin
         /// </summary>
         /// <param name="cmdBuffer">Command Buffer to add the rendering commands to</param>
         internal void RenderLiquidNative(CommandBuffer cmdBuffer, Camera cam, Rect? viewport = null)
@@ -3459,12 +3376,17 @@ namespace com.zibra.liquid.Solver
                 Debug.LogError("Unknown Rendering mode");
                 break;
             }
+
+            if (VisualizeSceneSDF)
+            {
+                RenderSDFVisualization(cmdBuffer, cam, viewport);
+            }
         }
 
         /// <summary>
-        ///     Upscale the liquid surface to currently bound render target
-        ///     Used for URP where we can't change render targets
-        ///     Used for URP where we can't change render targets
+        /// Upscale the liquid surface to currently bound render target
+        /// Used for URP where we can't change render targets
+        /// Used for URP where we can't change render targets
         /// </summary>
         internal void UpscaleLiquidDirect(CommandBuffer cmdBuffer, Camera cam,
                                           RenderTargetIdentifier? sourceColorTexture = null,
@@ -3488,11 +3410,12 @@ namespace com.zibra.liquid.Solver
         }
 
         /// <summary>
-        ///     Render the liquid surface
-        ///     Camera's targetTexture must be copied to cameraResources[cam].background
-        ///     using corresponding Render Pipeline before calling this method
+        /// Render the liquid surface
+        /// Camera's targetTexture must be copied to cameraResources[cam].background
+        /// using corresponding Render Pipeline before calling this method
         /// </summary>
         /// <param name="cmdBuffer">Command Buffer to add the rendering commands to</param>
+        /// <param name="cam">Camera</param>
         internal void RenderFluid(CommandBuffer cmdBuffer, Camera cam, RenderTargetIdentifier? renderTargetParam = null,
                                   RenderTargetIdentifier? depthTargetParam = null, Rect? viewport = null)
         {
@@ -3523,22 +3446,6 @@ namespace com.zibra.liquid.Solver
 
             RenderLiquidMain(cmdBuffer, cam, viewport);
 
-            if (VisualizeSceneSDF)
-            {
-                ZibraLiquidBridge.SubmitInstanceEvent(cmdBuffer, CurrentInstanceID, ZibraLiquidBridge.EventID.RenderSDF);
-
-                if (EnableDownscale)
-                {
-                    cmdBuffer.SetRenderTarget(UpscaleColor);
-                }
-                else
-                {
-                    cmdBuffer.SetRenderTarget(renderTarget);
-                }
-
-                RenderSDFVisualization(cmdBuffer, cam, viewport);
-            }
-
             // If downscale enabled then we need to blend it on top of final RenderTexture
             if (EnableDownscale)
             {
@@ -3559,11 +3466,12 @@ namespace com.zibra.liquid.Solver
         }
 
         /// <summary>
-        ///     Render the liquid surface
-        ///     Camera's targetTexture must be copied to cameraResources[cam].background
-        ///     using corresponding Render Pipeline before calling this method
+        /// Render the liquid surface
+        /// Camera's targetTexture must be copied to cameraResources[cam].background
+        /// using corresponding Render Pipeline before calling this method
         /// </summary>
         /// <param name="cmdBuffer">Command Buffer to add the rendering commands to</param>
+        /// <param name="cam">Camera</param>
         private void RenderLiquidMesh(CommandBuffer cmdBuffer, Camera cam, Rect? viewport = null)
         {
             Vector2Int cameraRenderResolution = CamRenderResolutions[cam];
@@ -3600,8 +3508,10 @@ namespace com.zibra.liquid.Solver
             cmdBuffer.DrawProcedural(transform.localToWorldMatrix, CurrentMaterial, 0, MeshTopology.Triangles, 6);
         }
 
-        internal void RenderSDFVisualization(CommandBuffer cmdBuffer, Camera cam, Rect? viewport = null)
+        private void RenderSDFVisualization(CommandBuffer cmdBuffer, Camera cam, Rect? viewport = null)
         {
+            ZibraLiquidBridge.SubmitInstanceEvent(cmdBuffer, CurrentInstanceID, ZibraLiquidBridge.EventID.RenderSDF);
+
             Vector2Int cameraRenderResolution = CamRenderResolutions[cam];
 
             Material CurrentMaterial = CameraResourcesMap[cam].SDFRenderMaterial.CurrentMaterial;
@@ -3624,8 +3534,10 @@ namespace com.zibra.liquid.Solver
         }
 
         /// <summary>
-        ///     Update the camera parameters for the particle renderer
+        /// Update the camera parameters for the particle renderer
         /// </summary>
+        /// <param name="cam">Camera</param>
+        ///
         private void UpdateCamera(Camera cam)
         {
             Vector2Int resolution = CamRenderResolutions[cam];
@@ -3665,7 +3577,7 @@ namespace com.zibra.liquid.Solver
 #if ZIBRA_LIQUID_PRO_VERSION
             MeshRenderGlobalParamsContainer.FoamingIntensity = MaterialParameters.FoamIntensity;
             MeshRenderGlobalParamsContainer.FoamingDecay = MaterialParameters.FoamDecay;
-            MeshRenderGlobalParamsContainer.FoamingThreshold = MaterialParameters.FoamingThreshold;
+            MeshRenderGlobalParamsContainer.FoamingThreshold = MaterialParameters.FoamAmount;
 #endif
 
             MeshRenderGlobalParamsContainer.Absorption = new Vector4(
@@ -3736,8 +3648,9 @@ namespace com.zibra.liquid.Solver
         }
 
         /// <summary>
-        ///     Update render parameters for a given camera
+        /// Update render parameters for a given camera
         /// </summary>
+        /// <param name="cam">Camera</param>
         private void InitializeNativeCameraParams(Camera cam)
         {
             if (!CamNativeParams.ContainsKey(cam))
@@ -3754,6 +3667,10 @@ namespace com.zibra.liquid.Solver
 
         private void UpdateNativeRenderParams()
         {
+            // Needs to be specifically in this place, to make sure that render mode in Unity and in native plugin are
+            // in sync
+            ActiveRenderingMode = CurrentRenderingMode;
+
 #if ZIBRA_LIQUID_DEBUG
             RenderParamsContainer.NeuralSamplingDistance = MaterialParameters.NeuralSamplingDistance;
             RenderParamsContainer.SDFDebug = MaterialParameters.SDFDebug;
@@ -3800,8 +3717,9 @@ namespace com.zibra.liquid.Solver
         }
 
         /// <summary>
-        ///     Rendering callback which is called by every camera in the scene
+        /// Rendering callback which is called by every camera in the scene
         /// </summary>
+        /// <param name="cam">Camera</param>
         internal void RenderCallBack(Camera cam, float renderPipelineRenderScale = 1.0f)
         {
             if (cam.cameraType == CameraType.Preview || cam.cameraType == CameraType.Reflection ||
@@ -4066,9 +3984,16 @@ namespace com.zibra.liquid.Solver
             {
                 Int32[] Stats = new Int32[size];
                 Marshal.Copy(readbackData, Stats, 0, (Int32)size);
-                ManipulatorManager.UpdateStatistics(Stats, Manipulators, SolverParameters, SDFColliders);
+                ManipulatorManager.UpdateStatistics(this, Stats, Manipulators, SolverParameters, SDFColliders);
             }
 #endif
+        }
+
+        // stability calibration curve fit
+        private float DivergenceDecayCurve(float x)
+        {
+            float a = (0.177f - 0.85f * x + 9.0f * x * x) / 1.8f;
+            return 1.8f * a / (a + 1);
         }
 
         private void SetFluidParameters()
@@ -4126,6 +4051,19 @@ namespace com.zibra.liquid.Solver
             {
                 Marshal.FreeHGlobal(data.Value);
             }
+
+            // TODO
+            // Fix memory cleanup
+            // Can't currently release this data, since it may be used on render thread
+            // Unity doesn't allow us to execute C# code on render thread
+            // foreach (var data in camMeshRenderParams)
+            //{
+            //    Marshal.FreeHGlobal(data.Value);
+            //}
+            // foreach (var data in toFreeOnExit)
+            //{
+            //    Marshal.FreeHGlobal(data);
+            //}
 
             foreach (var resource in CameraResourcesMap)
             {
@@ -4369,7 +4307,7 @@ namespace com.zibra.liquid.Solver
         }
 
         /// <summary>
-        ///     Apply currently set initial conditions
+        /// Apply currently set initial conditions
         /// </summary>
         private void ApplyInitialState()
         {

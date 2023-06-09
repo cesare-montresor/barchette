@@ -78,10 +78,6 @@ namespace com.zibra.liquid.Samples
         {
             lastMouse = Input.mousePosition - lastMouse;
             lastMouse = new Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0.0f);
-            if (Input.GetMouseButtonDown(0))
-            {
-                lastMouse = new Vector3(0.0f, 0.0f, 0.0f);
-            }
             if (Input.GetMouseButton(0))
             {
                 angVel += new Vector2(lastMouse.x, lastMouse.y);

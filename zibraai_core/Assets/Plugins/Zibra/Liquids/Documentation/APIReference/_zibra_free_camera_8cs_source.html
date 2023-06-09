@@ -158,37 +158,33 @@ $(function() {
 <div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        {</div>
 <div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            lastMouse = Input.mousePosition - lastMouse;</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            lastMouse = <span class="keyword">new</span> Vector3(-lastMouse.y * camSens, lastMouse.x * camSens, 0.0f);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">if</span> (Input.GetMouseButtonDown(0))</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">if</span> (Input.GetMouseButton(0))</div>
 <div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            {</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                lastMouse = <span class="keyword">new</span> Vector3(0.0f, 0.0f, 0.0f);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                angVel += <span class="keyword">new</span> Vector2(lastMouse.x, lastMouse.y);</div>
 <div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            }</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">if</span> (Input.GetMouseButton(0))</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            {</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>                angVel += <span class="keyword">new</span> Vector2(lastMouse.x, lastMouse.y);</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            }</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>            angVel *= 0.94f;</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            camPhi += angVel.x;</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            camTheta += angVel.y;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            lastMouse = Input.mousePosition;</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            camVel += Quaternion.Euler(camPhi, camTheta, 0) * GetBaseInput() * camSpeed;</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>            camPos += camVel * Time.smoothDeltaTime;</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            camVel *= 0.94f;</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span> </div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            Camera mainCamera = Camera.main;</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>            <span class="comment">// update projection matrix</span></div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>            <span class="keywordflow">if</span> (mainCamera != <span class="keyword">null</span>)</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>                mainCamera.transform.position = camPos;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>                mainCamera.transform.rotation = Quaternion.Euler(camPhi, camTheta, 0);</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>                mainCamera.fieldOfView = fov;</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>            }</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        }</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    }</div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>}</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            angVel *= 0.94f;</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>            camPhi += angVel.x;</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            camTheta += angVel.y;</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            lastMouse = Input.mousePosition;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            camVel += Quaternion.Euler(camPhi, camTheta, 0) * GetBaseInput() * camSpeed;</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            camPos += camVel * Time.smoothDeltaTime;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>            camVel *= 0.94f;</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span> </div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>            Camera mainCamera = Camera.main;</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span> </div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>            <span class="comment">// update projection matrix</span></div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>            <span class="keywordflow">if</span> (mainCamera != <span class="keyword">null</span>)</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                mainCamera.transform.position = camPos;</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                mainCamera.transform.rotation = Quaternion.Euler(camPhi, camTheta, 0);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                mainCamera.fieldOfView = fov;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        }</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>    }</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>}</div>
 <div class="ttc" id="anamespacecom_1_1zibra_1_1liquid_1_1_samples_html"><div class="ttname"><a href="namespacecom_1_1zibra_1_1liquid_1_1_samples.html">com.zibra.liquid.Samples</a></div><div class="ttdef"><b>Definition:</b> <a href="_zibra_free_camera_8cs_source.html#l00003">ZibraFreeCamera.cs:4</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

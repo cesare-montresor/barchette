@@ -12,7 +12,7 @@ namespace com.zibra.liquid.Editor.Solver
     {
         private ZibraLiquidSpeciesModifier[] SpeciesModifierInstances;
 
-        private SerializedProperty TargetSpecie;
+        private SerializedProperty TargetSpecies;
         private SerializedProperty Probability;
 
         public override void OnInspectorGUI()
@@ -72,7 +72,7 @@ namespace com.zibra.liquid.Editor.Solver
 
             EditorGUILayout.PropertyField(CurrentInteractionMode);
             EditorGUILayout.PropertyField(ParticleSpecies);
-            EditorGUILayout.PropertyField(TargetSpecie);
+            EditorGUILayout.PropertyField(TargetSpecies);
             EditorGUILayout.PropertyField(Probability);
             serializedObject.ApplyModifiedProperties();
         }
@@ -91,7 +91,7 @@ namespace com.zibra.liquid.Editor.Solver
                 SpeciesModifierInstances[i] = targets[i] as ZibraLiquidSpeciesModifier;
             }
 
-            TargetSpecie = serializedObject.FindProperty("TargetSpecie");
+            TargetSpecies = serializedObject.FindProperty("TargetSpecies");
             Probability = serializedObject.FindProperty("Probability");
         }
     }

@@ -116,7 +116,7 @@ namespace com.zibra.liquid.DataStructures
         ///     </para>
         /// </remarks>
         [Tooltip("Determines how much memory to allocate for liquid mesh.")]
-        [Range(0.1f, 3.0f)]
+        [Range(0.01f, 3.0f)]
         public float MaxLiquidMeshSize = 1.0f;
 
         /// <summary>

@@ -326,6 +326,7 @@ namespace com.zibra.liquid.Manipulators
                 SDFObjectParams sdf = GetSDF(manipulator.GetComponent<SDFObject>(), manipulator);
 
 #if ZIBRA_LIQUID_PRO_VERSION
+                // TODO replace with SDF group
                 if (manipulator.GetComponent<SkinnedMeshSDF>() != null)
                 {
                     float TotalVolume = 0.0f;
@@ -409,10 +410,36 @@ namespace com.zibra.liquid.Manipulators
         }
 
 #if ZIBRA_LIQUID_PAID_VERSION
+        private Vector3 Simulation2Local(Vector3 pos, ZibraLiquid parent)
+        {
+            return new Vector3(
+                parent.ContainerSize.x * pos.x / parent.GridSize.x - parent.ContainerSize.x * 0.5f,
+                parent.ContainerSize.y * pos.y / parent.GridSize.y - parent.ContainerSize.y * 0.5f,
+                parent.ContainerSize.z * pos.z / parent.GridSize.z - parent.ContainerSize.z * 0.5f
+            );
+        }
+
+        private Vector3 Simulation2World(Vector3 pos, ZibraLiquid parent)
+        {
+            return Simulation2Local(pos, parent) + parent.transform.position;
+        }
+
+        private Vector3 EncodedSimulationSpaceToWorldSpace(Vector3 encodedPos, ZibraLiquid parent, bool inverted = false)
+        {
+            Vector3 simulationPosition = Vector3.Scale(encodedPos / ((float)Int32.MaxValue), parent.GridSize);
+
+            if (inverted)
+            {
+                simulationPosition = parent.GridSize - simulationPosition;
+            }
+
+            return Simulation2World(simulationPosition, parent);
+        }
+
         /// <summary>
         /// Update manipulator statistics
         /// </summary>
-        public void UpdateStatistics(Int32[] data, List<Manipulator> curManipulators,
+        public void UpdateStatistics(ZibraLiquid parent, Int32[] data, List<Manipulator> curManipulators,
                                      DataStructures.ZibraLiquidSolverParameters solverParameters,
                                      List<ZibraLiquidCollider> sdfObjects)
         {
@@ -446,6 +473,26 @@ namespace com.zibra.liquid.Manipulators
                 case Manipulator.ManipulatorType.Detector:
                     ZibraLiquidDetector zibradetector = manipulator as ZibraLiquidDetector;
                     zibradetector.ParticlesInside = data[GetStatIndex(id, 0)];
+
+                    if (zibradetector.ParticlesInside > 0)
+                    {
+                        // Decode bounding box position and convert them to world space.
+                        zibradetector.BoundingBoxMin = EncodedSimulationSpaceToWorldSpace(
+                            new Vector3(data[GetStatIndex(id, 1)], data[GetStatIndex(id, 2)], data[GetStatIndex(id, 3)]),
+                            parent,
+                            true // BoundingBoxMin is inverted to simulate atomic min in the compute shader.
+                        );
+                        zibradetector.BoundingBoxMax = EncodedSimulationSpaceToWorldSpace(
+                            new Vector3(data[GetStatIndex(id, 4)], data[GetStatIndex(id, 5)], data[GetStatIndex(id, 6)]),
+                            parent
+                        );
+                    }
+                    else
+                    {
+                        zibradetector.BoundingBoxMin = new Vector3(0.0f, 0.0f, 0.0f);
+                        zibradetector.BoundingBoxMax = new Vector3(0.0f, 0.0f, 0.0f);
+                    }
+
                     break;
                 case Manipulator.ManipulatorType.NeuralCollider:
                 case Manipulator.ManipulatorType.AnalyticCollider:
@@ -500,17 +547,6 @@ namespace com.zibra.liquid.Manipulators
                         continue;
                     }
                 }
-
-                if (sdf is SkinnedMeshSDF)
-                {
-                    SkinnedMeshSDF skinnedMeshSDF = sdf as SkinnedMeshSDF;
-                    if (!skinnedMeshSDF.HasRepresentation())
-                    {
-                        Debug.LogWarning("SkinnedMeshSDF in " + manipulator.gameObject.name +
-                                         " was not generated. Manipulator is disabled.");
-                        continue;
-                    }
-                }
 #else
                 if (sdf is NeuralSDF)
                 {
@@ -538,26 +574,12 @@ namespace com.zibra.liquid.Manipulators
                 }
 
 #if ZIBRA_LIQUID_PAID_VERSION
-                if (sdf is NeuralSDF)
+                NeuralSDF neuralSDF = manipulator.GetComponent<NeuralSDF>();
+                if (neuralSDF != null && !neuralSDF.ObjectRepresentation.HasRepresentationV3)
                 {
-                    NeuralSDF neuralSDF = sdf as NeuralSDF;
-                    if (!neuralSDF.ObjectRepresentation.HasRepresentationV3)
-                    {
-                        Debug.LogWarning("NeuralSDF in " + manipulator.gameObject.name +
-                                         " was not generated. Collider is disabled.");
-                        continue;
-                    }
-                }
-
-                if (sdf is SkinnedMeshSDF)
-                {
-                    SkinnedMeshSDF skinnedMeshSDF = sdf as SkinnedMeshSDF;
-                    if (!skinnedMeshSDF.HasRepresentation())
-                    {
-                        Debug.LogWarning("SkinnedMeshSDF in " + manipulator.gameObject.name +
-                                         " was not generated. Collider is disabled.");
-                        continue;
-                    }
+                    Debug.LogWarning("NeuralSDF in " + manipulator.gameObject.name +
+                                     " was not generated. Collider is disabled.");
+                    continue;
                 }
 #endif
 

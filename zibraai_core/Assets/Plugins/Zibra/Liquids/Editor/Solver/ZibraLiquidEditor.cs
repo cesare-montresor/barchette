@@ -127,9 +127,6 @@ namespace com.zibra.liquid.Editor.Solver
             // Create a custom game object
             var go = new GameObject(name);
             var newForceField = go.AddComponent<ZibraLiquidSpeciesModifier>();
-            // Add default SDF to the object
-            var newSDF = go.AddComponent<AnalyticSDF>();
-            newSDF.ChosenSDFType = AnalyticSDF.SDFType.Box;
             // Ensure it gets reparented if this was a context click (otherwise does nothing)
             GameObjectUtility.SetParentAndAlign(go, menuCommand.context as GameObject);
             // Register the creation in the undo system
@@ -236,10 +233,17 @@ namespace com.zibra.liquid.Editor.Solver
 
         private GUIStyle containerText;
 
+        protected void TriggerRepaint()
+        {
+            Repaint();
+        }
+
         protected void OnEnable()
         {
             // Only need to add callback to one of liquids
             ZibraLiquid anyInstance = target as ZibraLiquid;
+            // Disabled, we don't want to repain liquid editor each frame
+            // anyInstance.OnChanged += TriggerRepaint;
 
             ZibraLiquidInstances = new ZibraLiquid[targets.Length];
 
@@ -283,6 +287,12 @@ namespace com.zibra.liquid.Editor.Solver
             serializedObject.ApplyModifiedProperties();
 
             containerText = new GUIStyle { alignment = TextAnchor.MiddleLeft, normal = { textColor = containerColor } };
+        }
+
+        protected void OnDisable()
+        {
+            ZibraLiquid anyInstance = target as ZibraLiquid;
+            // anyInstance.OnChanged -= TriggerRepaint;
         }
 
         // Toggled with "Edit Container Area" button

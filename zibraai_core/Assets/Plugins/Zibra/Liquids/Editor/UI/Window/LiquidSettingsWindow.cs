@@ -30,27 +30,20 @@ namespace com.zibra.liquid
 
             LatestStatus = ZibraServerAuthenticationManager.GetInstance().GetStatus();
 
-            if (ZibraServerAuthenticationManager.GetInstance().IsLicenseVerified())
+            if (LatestStatus == ZibraServerAuthenticationManager.Status.OK)
             {
                 m_Tabs["Info"].Q<Button>("registerKeyBtn").style.display = DisplayStyle.None;
                 m_Tabs["Info"].Q<Button>("validateAuthKeyBtn").style.display = DisplayStyle.None;
                 m_Tabs["Info"].Q<TextField>("authKeyInputField").style.display = DisplayStyle.None;
-                m_Tabs["Info"].Q<Label>("validationProgress").style.display = DisplayStyle.None;
                 m_Tabs["Info"].Q<Label>("registeredKeyLabel").style.display = DisplayStyle.Flex;
-                m_Tabs["Info"].Q<Button>("removeAuthKeyBtn").style.display = DisplayStyle.Flex;
+                m_Tabs["Info"].Q<Label>("validationProgress").style.display = DisplayStyle.None;
             }
             else
             {
                 m_Tabs["Info"].Q<Label>("validationProgress").text =
                     ZibraServerAuthenticationManager.GetInstance().GetErrorMessage();
-#if !ZIBRA_LIQUID_PRO_VERSION
-                m_Tabs["Info"].Q<Button>("registerKeyBtn").style.display = DisplayStyle.Flex;
-#endif
-                m_Tabs["Info"].Q<Button>("validateAuthKeyBtn").style.display = DisplayStyle.Flex;
-                m_Tabs["Info"].Q<TextField>("authKeyInputField").style.display = DisplayStyle.Flex;
                 m_Tabs["Info"].Q<Label>("validationProgress").style.display = DisplayStyle.Flex;
                 m_Tabs["Info"].Q<Label>("registeredKeyLabel").style.display = DisplayStyle.None;
-                m_Tabs["Info"].Q<Button>("removeAuthKeyBtn").style.display = DisplayStyle.None;
             }
 #endif
         }

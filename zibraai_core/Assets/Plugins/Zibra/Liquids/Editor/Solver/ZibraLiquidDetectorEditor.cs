@@ -11,6 +11,7 @@ namespace com.zibra.liquid.Editor.Solver
     internal class ZibraLiquidDetectorEditor : ZibraLiquidManipulatorEditor
     {
         private ZibraLiquidDetector[] DetectorInstances;
+        private Font MonospaceFont;
 
         public override void OnInspectorGUI()
         {
@@ -108,13 +109,25 @@ namespace com.zibra.liquid.Editor.Solver
 #endif
 
             if (DetectorInstances.Length > 1)
-                GUILayout.Label("Multiple detectors selected. Showing sum of all selected instances.");
+                GUILayout.Label("Multiple detectors selected. Showing sum of all selected instances. Not showing bounding boxes.");
             int particlesInside = 0;
             foreach (var instance in DetectorInstances)
             {
                 particlesInside += instance.ParticlesInside;
             }
+
+            Font defaultFont = GUI.skin.font;
+            GUI.skin.font = MonospaceFont;
+
             GUILayout.Label("Amount of particles inside the detector: " + particlesInside);
+            
+            if (DetectorInstances.Length == 1)
+            {
+                GUILayout.Label("Bounding box min: " + DetectorInstances[0].BoundingBoxMin);
+                GUILayout.Label("Bounding box max: " + DetectorInstances[0].BoundingBoxMax);
+            }
+
+            GUI.skin.font = defaultFont;
 
 #if ZIBRA_LIQUID_PRO_VERSION
             EditorGUILayout.PropertyField(CurrentInteractionMode);
@@ -129,6 +142,8 @@ namespace com.zibra.liquid.Editor.Solver
         protected new void OnEnable()
         {
             base.OnEnable();
+
+            MonospaceFont = EditorGUIUtility.Load("Fonts/RobotoMono/RobotoMono-Regular.ttf") as Font;
 
             DetectorInstances = new ZibraLiquidDetector[targets.Length];
 

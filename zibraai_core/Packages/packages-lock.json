@@ -97,15 +97,6 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       }
     },
-    "com.unity.ml-agents.extensions": {
-      "version": "file:C:/Users/Cesare/Projects/barchette/ml-agents/com.unity.ml-agents.extensions",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "com.unity.ml-agents": "2.3.0-exp.4",
-        "com.unity.modules.physics": "1.0.0"
-      }
-    },
     "com.unity.performance.profile-analyzer": {
       "version": "1.2.2",
       "depth": 1,

@@ -14,17 +14,12 @@ namespace com.zibra.liquid.SDFObjects
     [Obsolete]
     public class AnalyticSDFCollider : ZibraLiquidCollider
     {
-        // We only use it in Editor
-        // but we shouldn't put serialized fields
-        // inside #if UNITY_EDITOR
-#pragma warning disable 0414
         [SerializeField]
         [FormerlySerializedAs("chosenSDFType")]
         private AnalyticSDF.SDFType ChosenSDFType = AnalyticSDF.SDFType.Sphere;
 
         [SerializeField]
         private bool InvertSDF = false;
-#pragma warning restore 0414
 
 #if UNITY_EDITOR
         public void Awake()

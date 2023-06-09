@@ -25,7 +25,6 @@ namespace com.zibra.liquid.Plugins.Editor
 #if ZIBRA_LIQUID_PAID_VERSION
             Button checkAuthKeyBtn = this.Q<Button>("validateAuthKeyBtn");
             Button registerAuthKeyBtn = this.Q<Button>("registerKeyBtn");
-            Button removeAuthKeyBtn = this.Q<Button>("removeAuthKeyBtn");
             m_AuthKeyInputField = this.Q<TextField>("authKeyInputField");
             m_ValidationProgressLabel = this.Q<Label>("validationProgress");
             m_RegisteredKeyLabel = this.Q<Label>("registeredKeyLabel");
@@ -34,20 +33,18 @@ namespace com.zibra.liquid.Plugins.Editor
             registerAuthKeyBtn.clicked += OnRegisterAuthKeyBtnOnClickedHandler;
             m_AuthKeyInputField.value = ZibraServerAuthenticationManager.GetInstance().PluginLicenseKey;
             checkAuthKeyBtn.clicked += OnAuthKeyBtnOnClickedHandler;
-            removeAuthKeyBtn.clicked += OnRemoveKeyBtnOnClickedHandler;
             // Hide if key is valid.
-            if (ZibraServerAuthenticationManager.GetInstance().IsLicenseVerified())
+            if (ZibraServerAuthenticationManager.GetInstance().GetStatus() ==
+                ZibraServerAuthenticationManager.Status.OK)
             {
                 registerAuthKeyBtn.style.display = DisplayStyle.None;
                 checkAuthKeyBtn.style.display = DisplayStyle.None;
                 m_AuthKeyInputField.style.display = DisplayStyle.None;
                 m_RegisteredKeyLabel.style.display = DisplayStyle.Flex;
-                removeAuthKeyBtn.style.display = DisplayStyle.Flex;
             }
             else
             {
                 m_RegisteredKeyLabel.style.display = DisplayStyle.None;
-                removeAuthKeyBtn.style.display = DisplayStyle.None;
             }
 
 #if ZIBRA_LIQUID_PRO_VERSION
@@ -79,11 +76,6 @@ namespace com.zibra.liquid.Plugins.Editor
             {
                 EditorUtility.DisplayDialog("Zibra Liquid Key Error", "Incorrect key format.", "Ok");
             }
-        }
-
-        private void OnRemoveKeyBtnOnClickedHandler()
-        {
-            ZibraServerAuthenticationManager.GetInstance().RemoveKey();
         }
 #endif
     }

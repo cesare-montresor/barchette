@@ -100,11 +100,10 @@
             }
 
             // Input resources
-            Texture2D<float4> Background;
-            SamplerState samplerBackground;
+            sampler2D Background;
             float4 FetchBackground(float2 uv)
             {
-                return Background.Sample(samplerBackground, GetFlippedUVBackground(uv));
+                return tex2D(Background, GetFlippedUVBackground(uv));
             }
 
             StructuredBuffer<int> Quads;
@@ -112,11 +111,10 @@
             StructuredBuffer<float4> Vertices;
 
             // built-in Unity sampler name - do not change
-            Texture2D<float4> _CameraDepthTexture;
-            SamplerState sampler_CameraDepthTexture;
+            sampler2D _CameraDepthTexture;
             float FetchCameraDepth(float2 uv)
             {
-                float depth = _CameraDepthTexture.Sample(sampler_CameraDepthTexture, GetFlippedUV(uv)).x;
+                float depth = tex2D(_CameraDepthTexture, GetFlippedUV(uv)).x;
 #if !defined(UNITY_REVERSED_Z)
                 depth = 1.0 - depth;
 #endif
@@ -438,7 +436,7 @@
 #ifdef UNDERWATER_RENDER
                 float CameraDensity = 0.0f;
                 if(insideGrid(cameraPos))
-                CameraDensity = SampleDensity(cameraPos);
+                CameraDensity = SampleDensity(cameraPos).w;
                 bool isUnderwater = (step(ndotv, 0.0)) && (CameraDensity > 0.0);
 				if (!isUnderwater && liquidDepth < sceneDepth)
                 {
@@ -490,6 +488,7 @@
                     ////compute light from light sources
                     ////
 
+                    //TODO loop over all lights
                     incomingLight += fresnel*ComputeMaterial(cameraPos, cameraRay, normal, lightDirWorld, lightColor, materialRoughness);
 
 					incomingLight += materialEmission;

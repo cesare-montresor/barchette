@@ -89,6 +89,7 @@ namespace com.zibra.liquid.SDFObjects
     [Serializable]
     internal class NeuralSDFRepresentation
     {
+        // TODO implement variable resolution
         public const int BLOCK_SDF_APPROX_DIMENSION = 32;
         public const int BLOCK_EMBEDDING_GRID_DIMENSION = 21;
 

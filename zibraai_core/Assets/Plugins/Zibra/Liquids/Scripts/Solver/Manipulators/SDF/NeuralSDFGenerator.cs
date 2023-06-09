@@ -84,6 +84,17 @@ namespace com.zibra.liquid.Editor.SDFObjects
 
                 GameObject boneObject;
 
+                Transform bonetransform = bone.Find("BoneNeuralSDF");
+                if (bonetransform != null)
+                {
+                    GameObject.DestroyImmediate(bonetransform.gameObject);
+                }
+
+                if (boneMeshes[i].vertexCount == 0)
+                {
+                    continue;
+                }
+
                 boneObject = new GameObject();
                 boneObject.name = "BoneNeuralSDF";
                 boneObject.transform.SetParent(sdf.transform, false);
@@ -93,7 +104,7 @@ namespace com.zibra.liquid.Editor.SDFObjects
             }
 
             SkinnedNeuralSDFGenerator gen =
-                new SkinnedNeuralSDFGenerator(sdf.BoneSDFList, bones, instanceSkinnedMeshRenderer, sdf, sdf.gameObject);
+                new SkinnedNeuralSDFGenerator(sdf.BoneSDFList, bones, instanceSkinnedMeshRenderer, sdf.gameObject);
             AddToQueue(gen);
             SkinnedGenerators[gen] = sdf;
         }
@@ -250,11 +261,7 @@ namespace com.zibra.liquid.Editor.SDFObjects
             {
                 if (requestURL != "")
                 {
-#if UNITY_2022_2_OR_NEWER
-                    CurrentRequest = UnityWebRequest.PostWwwForm(requestURL, json);
-#else
                     CurrentRequest = UnityWebRequest.Post(requestURL, json);
-#endif
                     CurrentRequest.SendWebRequest();
                 }
             }
@@ -378,16 +385,14 @@ namespace com.zibra.liquid.Editor.SDFObjects
     {
         private List<SDFObject> NeuralSDFInstances;
         private Transform[] BoneTransforms;
-        private SkinnedMeshRenderer Renderer;
-        private SkinnedMeshSDF SDF;
+        private SkinnedMeshRenderer renderer;
 
-        public SkinnedNeuralSDFGenerator(List<SDFObject> NeuralSDFs, Transform[] bones, SkinnedMeshRenderer r, 
-                                         SkinnedMeshSDF sdf, GameObject gameObject)
+        public SkinnedNeuralSDFGenerator(List<SDFObject> NeuralSDFs, Transform[] bones, SkinnedMeshRenderer r,
+                                         GameObject gameObject)
         {
-            Renderer = r;
+            renderer = r;
             MeshToProcess = MeshUtilities.GetMesh(r.gameObject);
             NeuralSDFInstances = NeuralSDFs;
-            SDF = sdf;
             BoneTransforms = bones;
             GameObjectToMarkDirty = gameObject;
         }
@@ -400,17 +405,10 @@ namespace com.zibra.liquid.Editor.SDFObjects
             int[] bone_ids = new int[MeshToProcess.vertexCount * 4];
             float[] bone_weights = new float[MeshToProcess.vertexCount * 4];
 
-            Mesh sharedMesh = Renderer.sharedMesh;
+            Mesh sharedMesh = renderer.sharedMesh;
 
             for (int i = 0; i < sharedMesh.vertexCount; i++)
             {
-                if (i % 100 == 0)
-                {
-                    EditorUtility.DisplayProgressBar("Zibra Liquids Skinned Mesh SDF Generation",
-                        $"Starting Generation: Processing vertices {i}/{sharedMesh.vertexCount}",
-                        ((float)i) / sharedMesh.vertexCount);
-                }
-
                 var weight = sharedMesh.boneWeights[i];
                 bone_ids[i * 4 + 0] = weight.boneIndex0;
                 bone_ids[i * 4 + 1] = (weight.weight1 == 0.0f) ? -1 : weight.boneIndex1;
@@ -422,8 +420,6 @@ namespace com.zibra.liquid.Editor.SDFObjects
                 bone_weights[i * 4 + 2] = weight.weight2;
                 bone_weights[i * 4 + 3] = weight.weight3;
             }
-
-            EditorUtility.ClearProgressBar();
 
             var meshRepresentation =
                 new SkinnedMeshRepresentation { vertices = MeshToProcess.vertices.Vector3ToString(),
@@ -463,7 +459,6 @@ namespace com.zibra.liquid.Editor.SDFObjects
 
                 if (string.IsNullOrEmpty(representation.embeds) || string.IsNullOrEmpty(representation.sd_grid))
                 {
-                    GameObject.DestroyImmediate(NeuralSDFInstances[i]);
                     continue;
                 }
 
@@ -478,22 +473,6 @@ namespace com.zibra.liquid.Editor.SDFObjects
                     neuralSDF.transform.SetParent(BoneTransforms[i], true);
                 }
             }
-            for (int i = newRepresentation.meshes_data.Length; i < NeuralSDFInstances.Count; i++)
-            {
-                GameObject.DestroyImmediate(NeuralSDFInstances[i]);
-            }
-
-
-            List<SDFObject> finalNeuralSDFList = new List<SDFObject>();
-            foreach (var obj in NeuralSDFInstances) 
-            {
-                if (obj != null)
-                {
-                    finalNeuralSDFList.Add(obj);
-                }
-            }
-
-            SDF.BoneSDFList = finalNeuralSDFList;
 
             EditorUtility.SetDirty(GameObjectToMarkDirty);
         }

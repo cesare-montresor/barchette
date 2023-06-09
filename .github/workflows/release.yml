@@ -26,30 +26,22 @@ jobs:
     runs-on: windows-latest
     
     steps:      
-    - name: Grab Version
-      shell: powershell
-      run: |
-        Get-Location
-    
     # check code
     - name: Checkout repository
       uses: actions/checkout@v2   
       
-    - name: Show Root
+    - name: Show Dirs
       shell: cmd
       run: |
+        dir
+        cd zibraai_core
         dir
         
     - name: Show zibraai_core
       shell: cmd
       run: |
-        cd zibraai_core
-        dir
-    
-    - name: Show VERSION
-      shell: cmd
-      run: |
-        echo zibraai_core/VERSION.txt
+        
+
       
     # read version
     - name: Grab Version
@@ -57,6 +49,7 @@ jobs:
       shell: powershell
       run: |
         $version = Get-Content "zibraai_core/VERSION.txt"
+        echo "VERSION" $version
         echo "::set-output name=version::$version"
         
         
@@ -74,19 +67,25 @@ jobs:
       env:
         UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
         UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+        UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
       with:
        targetPlatform: StandaloneWindows
        projectPath: zibraai_core/
     #   targetPlatform: StandaloneWindows
     #   targetPlatform: StandaloneWindows64
     #   targetPlatform: LinuxHeadlessSimulation
-    
+        
     # Copy resoruces
     - name: Copy Resources
       shell: powershell
       run: |
         Copy-Item -Path "zibraai_core/run.sh" -Destination "zibraai_core/Build/run.sh" 
+        
+    - name: Show Build
+      shell: cmd
+      run: |
+        cd zibraai_core/Build
+        dir
     
     # Zip Build folder
     - name: Create ZIP

@@ -40,7 +40,7 @@ namespace Univr.Barchette.Sensors.GPS
 
 
         [Header("Beacon Coordinates")]
-        //[Range(-180.0f, 180.0f)]
+        //[Range(-180.0f, 180.0f)]                                                                    
         public float latitude;
 
         //[Range(-90.0f, 90.0f)]
@@ -66,24 +66,28 @@ namespace Univr.Barchette.Sensors.GPS
 
         private void UpdateRatios()
         {
-            var cnt = m_BeaconList.Count - 1;
+            var cnt = m_BeaconList.Count-1;
             if (cnt <= 0) { return; }
-            Vector3 ratios = Vector3.zero;
+            float x_lng_ratio_tmp = 0;
+            float y_alt_ratio_tmp = 0;
+            float z_lat_ratio_tmp = 0;
+
             m_BeaconList.ForEach((beacon) => {
                 if (beacon == this) return;
                 var dpos = transform.position - beacon.transform.position;
 
-                var dlng = (float)(beacon.longitude - longitude);
-                var dlat = (float)(beacon.latitude - latitude);
-                var dalt = (float)(beacon.altitude - altitude);
+                var dlng = (float)Mathf.Abs(beacon.longitude - longitude);
+                var dlat = (float)Mathf.Abs(beacon.latitude - latitude);
+                var dalt = (float)Mathf.Abs(beacon.altitude - altitude);
 
-                var beacon_ratios = new Vector3(dpos.x / dlng, dpos.z / dlat, dpos.y / dalt);
-                ratios += beacon_ratios / cnt;
+                x_lng_ratio_tmp += (dlng / dpos.x) / cnt;
+                y_alt_ratio_tmp += (dalt / dpos.y) / cnt;
+                z_lat_ratio_tmp += (dlat / dpos.z) / cnt;
             });
 
-            x_lng_ratio = ratios.x;
-            z_lat_ratio = ratios.z;
-            y_alt_ratio = ratios.y;
+            x_lng_ratio = x_lng_ratio_tmp;
+            y_alt_ratio = y_alt_ratio_tmp;
+            z_lat_ratio = z_lat_ratio_tmp;
         }
 
 
@@ -95,8 +99,8 @@ namespace Univr.Barchette.Sensors.GPS
         public LatLng LatLng(Vector3 itemPosition)
         {
             var dpos = itemPosition - transform.position;
-            var lat = dpos.x * x_lng_ratio + longitude;
-            var lng = dpos.z * z_lat_ratio + latitude;
+            var lng = dpos.x * x_lng_ratio + longitude;
+            var lat = dpos.z * z_lat_ratio + latitude;
             
             return new LatLng(lat, lng);
         }
@@ -104,9 +108,9 @@ namespace Univr.Barchette.Sensors.GPS
         public LatLngAlt LatLngAlt(Vector3 itemPosition)
         {
             var dpos = itemPosition - transform.position;
-            var lat = dpos.x * x_lng_ratio + longitude;
-            var lng = dpos.z * z_lat_ratio + latitude;
-            var alt = dpos.y * y_alt_ratio + altitude;
+            var lng = itemPosition.x * x_lng_ratio + longitude;
+            var lat = itemPosition.z * z_lat_ratio + latitude;
+            var alt = itemPosition.y * y_alt_ratio + altitude;
 
             return new LatLngAlt(lat, lng, alt);
         }

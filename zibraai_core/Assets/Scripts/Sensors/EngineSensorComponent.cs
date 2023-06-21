@@ -35,7 +35,6 @@ namespace Univr.Barchette.Sensors.Engine
 
 
         private float m_lastUpdate;
-        private float m_lastHingeAngle;
         private float m_lastImmersion;
 
         public EngineSensor(string name, EngineSensorComponent parent)
@@ -48,6 +47,7 @@ namespace Univr.Barchette.Sensors.Engine
             m_Basename += $":{m_SensorID}";
             m_Name = parent.sensorName;
             m_Parent = parent;
+            m_Engine = m_Parent.GetComponent<EngineActuator>();
 
             Reset();
         }
@@ -72,7 +72,7 @@ namespace Univr.Barchette.Sensors.Engine
 
         public int ObservationSize() {
             if (!m_Parent.enabled) { return 0;  }
-            return 2;
+            return 1;
         }
 
         public ObservationSpec GetObservationSpec()
@@ -83,7 +83,6 @@ namespace Univr.Barchette.Sensors.Engine
 
         public void Reset()
         {
-            m_lastHingeAngle = 0;
             m_lastImmersion = 0;
             m_lastUpdate = Time.fixedTime;
         }
@@ -94,14 +93,13 @@ namespace Univr.Barchette.Sensors.Engine
                 Reset();
                 return;
             }
-            m_lastHingeAngle = m_Engine.GetHingeAngle();
             m_lastImmersion = m_Engine.GetImmersion();
             m_lastUpdate = Time.fixedTime;
         }
 
         public int Write(ObservationWriter writer)
         {
-            var obs = new List<float> { m_lastHingeAngle, m_lastImmersion };
+            var obs = new List<float> { m_lastImmersion };
             writer.AddList(obs);
             return ObservationSize();
         }

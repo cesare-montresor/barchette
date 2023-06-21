@@ -21,7 +21,7 @@ namespace Univr.Barchette.Sensors.IMU
         [Range(0, 1)]
         public float errorRateAccelerometer = 0.05f;
         public float scaleForces = 1.0f;
-        public float minimumDeltaTime = 0.000001f;
+        public float minimumDeltaTime = 0.00001f;
         public override ISensor[] CreateSensors()
         {
             var sensor = new IMUSensor("imu", this);
@@ -84,8 +84,9 @@ namespace Univr.Barchette.Sensors.IMU
         }
 
         public int ObservationSize() {
-            int size = 0;
             if (!m_parent.enabled) { return 0; }
+
+            int size = 0;
             if (m_parent.useGyroscope) size += 3;
             if (m_parent.useAccelerometer) size += 3;
             return size;
@@ -143,7 +144,7 @@ namespace Univr.Barchette.Sensors.IMU
             m_lastSpeed = speed;
             m_lastPosition = m_parent.transform.position;
             m_lastUpdate = Time.fixedTime;
-        }
+        }                               
 
         public int Write(ObservationWriter writer)
         {

@@ -13,13 +13,17 @@ def main():
     env = createUnityEnv(path)
     run(env)
 
+
+
 def policy(observation, agent):
     return 0
 
 
 def run(env):
-    data = env.step((1,0,0,0))
-    print(data)
+    while True:
+        obs, reward, terminated, info = env.step(1)
+
+        print(*obs[0])
     #logger.configure('./logs')  # Change to log in a different directory
     #act = deepq.learn(
     #    env # Change to save model in a different directory

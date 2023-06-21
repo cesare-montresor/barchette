@@ -3,7 +3,7 @@ using System;
 using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
-using Unity.MLAgents.Actuators;
+using System.Threading.Tasks;
 
 public class EngineActuator : MonoBehaviour // ActuatorComponent // TODO: look into actuators as base class ?
 {
@@ -21,9 +21,13 @@ public class EngineActuator : MonoBehaviour // ActuatorComponent // TODO: look i
     private float targetPosition = 0;
     private Vector3 startPosition;
     private Quaternion startRotation;
+
     private Renderer render;
     private HingeJoint joint;
     private Rigidbody parent_rb;
+    private bool isReady = true;
+    
+
 
     // Update is called once per frame
     void Start()
@@ -33,10 +37,9 @@ public class EngineActuator : MonoBehaviour // ActuatorComponent // TODO: look i
         joint = GetComponent<HingeJoint>();
         parent_rb = joint.connectedBody.GetComponent<Rigidbody>();
 
-
         startPosition = parent_rb.position;
         startRotation = parent_rb.rotation;
-
+        
         targetPosition = joint.spring.targetPosition;
         joint.useSpring = true;
         joint.useLimits = true;
@@ -83,6 +86,7 @@ public class EngineActuator : MonoBehaviour // ActuatorComponent // TODO: look i
 
     public void Move(bool reverse = false)
     {
+        if (!isReady) { return; }
         Rigidbody rb = GetComponent<Rigidbody>();
         parent_rb.isKinematic = false;
 
@@ -96,6 +100,7 @@ public class EngineActuator : MonoBehaviour // ActuatorComponent // TODO: look i
 
     public void TurnLeft()
     {
+        if (!isReady) { return; }
         var spring = joint.spring;
         spring.targetPosition = Math.Max(Math.Min(spring.targetPosition + torque, joint.limits.max), joint.limits.min);
         joint.spring = spring;
@@ -104,6 +109,7 @@ public class EngineActuator : MonoBehaviour // ActuatorComponent // TODO: look i
 
     public void TurnRight()
     {
+        if (!isReady) { return; }
         var spring = joint.spring;
         spring.targetPosition = Math.Max(Math.Min(spring.targetPosition - torque, joint.limits.max), joint.limits.min);
         joint.spring = spring;
@@ -120,14 +126,23 @@ public class EngineActuator : MonoBehaviour // ActuatorComponent // TODO: look i
 
     public void Restore()
     {
+        isReady = false;
+
         parent_rb.isKinematic = true;
         parent_rb.position = startPosition;
         parent_rb.rotation = startRotation;
+        
+        var spring = joint.spring;
+        spring.targetPosition = 0;
+        joint.spring = spring;
+
+        Task.Delay(1000).ContinueWith( t => isReady = true);
     }
 
     void Update()
     {
         UpdateEngineColor();
+        if (!isReady) { return; }
 
         var spring = joint.spring;
         
@@ -147,11 +162,12 @@ public class EngineActuator : MonoBehaviour // ActuatorComponent // TODO: look i
             TurnNeutral();
         }
 
-
-
-        if (Input.GetKey(resetKet)) {
+        if (Input.GetKey(resetKet))
+        {
             Restore();
         }
+
+
 
 
         //float xDir = Input.GetAxis("Horizontal");
@@ -170,4 +186,7 @@ public class EngineActuator : MonoBehaviour // ActuatorComponent // TODO: look i
             rb.AddForce(Vector3.down);
         */
     }
+
+
+
 }

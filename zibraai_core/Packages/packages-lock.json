@@ -88,13 +88,22 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ml-agents": {
-      "version": "file:C:/Users/Cesare/Projects/barchette/ml-agents/com.unity.ml-agents",
+      "version": "file:../Assets/Plugins/com.unity.ml-agents",
       "depth": 0,
       "source": "local",
       "dependencies": {
         "com.unity.barracuda": "3.0.0",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
+      }
+    },
+    "com.unity.ml-agents.extensions": {
+      "version": "file:../Assets/Plugins/com.unity.ml-agents.extensions",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.ml-agents": "2.3.0-exp.3",
+        "com.unity.modules.physics": "1.0.0"
       }
     },
     "com.unity.performance.profile-analyzer": {

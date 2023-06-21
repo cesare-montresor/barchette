@@ -61,18 +61,24 @@ public class BoatAgent : Agent
         m_engine_sensor = GetComponentsInChildren<EngineSensorComponent>().FirstOrDefault();
 
 
-        m_lidar.enabled = useLidar;
-        m_sonar.enabled = useSonar;
-        m_imu.enabled = useIMU;
-        m_gps.useLatLng = useGPS;
-        m_gps.useAltitude = useAltitude;
-        m_gps.useCompass = useCompass;
-        m_engine_sensor.enabled = useEngineSensors;
+        if (m_lidar != null) { 
+            m_lidar.enabled = useLidar; 
+        }
+        if (m_sonar != null) { m_sonar.enabled = useSonar; }
+        if (m_imu != null) { m_imu.enabled = useIMU; }
+        if (m_gps != null) {
+            m_gps.useLatLng = useGPS;
+            m_gps.useAltitude = useAltitude;
+            m_gps.useCompass = useCompass;
+        }
 
-        m_engine.speed = engineSpeed;
-        m_engine.torque = engineTorque;
+
+        if (m_engine_sensor != null) { m_engine_sensor.enabled = useEngineSensors; }
+        if (m_engine != null) {
+            m_engine.speed = engineSpeed;
+            m_engine.torque = engineTorque;
+        }
         
-
     }
     /*
     public override void CollectObservations(VectorSensor sensor)

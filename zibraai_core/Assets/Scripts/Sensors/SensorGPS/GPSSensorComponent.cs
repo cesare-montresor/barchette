@@ -23,6 +23,8 @@ namespace Univr.Barchette.Sensors.GPS
         public bool useLatLng = true;
         public bool useAltitude = true;
         public bool useCompass = true;
+
+        public float compassOffset = 0.0f;
     }
 
 
@@ -117,7 +119,7 @@ namespace Univr.Barchette.Sensors.GPS
             m_lng = coords.longitude + lng_error * ((Random.value * 2) - 1);
             m_lat = coords.latitude + lat_error * ((Random.value * 2) - 1);
             m_alt = coords.altitude + alt_error * ((Random.value * 2) - 1);
-            m_comp = 0;      // TODO compass
+            m_comp = Mathf.Abs(m_parent.transform.rotation.eulerAngles.y + m_parent.compassOffset) % 360;
         }
 
         public int Write(ObservationWriter writer)

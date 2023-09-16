@@ -1,0 +1,150 @@
+\section{Simulator Development}
+
+% ------------------------------ 3.1 Unity3D ------------------------------ %
+
+\subsection{Unity3D}
+
+\img[\textwidth]{31_unity}{Unity3D Editor}{}
+{\url{https://www.iamag.co/unity-3d-101/}}
+
+\begin{textblock}
+
+
+Unity3D is a cross-platform game engine developed by Unity Technologies. It was first announced and released in June 2005 at the Apple Worldwide Developers Conference as a Mac OS X game engine. Over the years, Unity3D has been extended to support various platforms, including desktop, mobile, console, and virtual reality.\cite{unitywiki}
+
+Unity3D is particularly popular for iOS and Android mobile game development and is widely used by indie game developers due to its ease of use. It allows developers to create both three-dimensional (3D) and two-dimensional (2D) games, as well as interactive simulations and other experiences.\cite{unitywiki}
+
+The game engine's objective since its launch has been to "democratize" game development by making it accessible to a wider audience of developers. Unity3D has gained significant traction in the gaming industry and has also been adopted by other industries such as film, automotive, architecture, engineering, construction, and the United States Armed Forces.\cite{unitywiki}\cite{unitycontract2022}
+
+As for the current state of the Unity3D ecosystem, it continues to thrive with regular updates and releases. Unity Technologies maintains an active documentation website providing guides and resources for developers and has an extensive asset store where developers can access a wide range of ready-to-use assets, plugins, and tools to enhance their game development process.
+
+Moreover, Unity3D offers a free version, allowing developers to get started without any upfront costs. 
+
+Overall, Unity3D remains a leading game engine with a robust ecosystem, extensive documentation, and a thriving community of developers. Its versatility, ease of use, and cross-platform capabilities contribute to its popularity among both novice and experienced game developers.
+The closest competitor is represented by Unreal Engine, which, however, just recently has picked up the challenges and opportunities offered by DRL. UE in general is considered less user-friendly and entry-level than Unity3D but offers state-of-the-art results both in terms of performance and effectivness. 
+
+\end{textblock}
+
+
+% ------------------------------ 3.2 ZibraLiquids ------------------------------ %
+
+\subsection{ZibraLiquids}
+
+\img[\textwidth]{32_zibraplugin}{ZibraLiquids Editor}{}
+{\url{https://effects.zibra.ai/}}
+
+\begin{textblock}
+ZibraLiquids is a Unity3d plugin offered by ZibraAI, a deep-tech company that focuses on building a platform for creating AI-generated assets for virtual worlds and experiences. The plugin offers several options including fire, smoke, explosions, force-fields and more.
+
+For my purposes, I used the part of realistic liquids simulation that allows users to add interactive, real-time 3D liquid to the projects. The plugin offers a wide range of parameters to configure visual and physical properties to create different types of liquids.
+
+The pipeline is very efficient due to the leveraging of DNN at various points, from generating assets to controlling collisions with complex geometries.
+The plugin allows you to run a live simulation inside the editor and save the result. Later when the simulation begins the saved particles will be loaded always in the same starting state, contributing to a higher reproducibility.
+Despite the efficiency of the pipeline the team still discourages the use of the plugin for large bodies of water. Even with high-end hardware simulating liquids can be computationally demanding because it involves modelling and calculating the behaviour of a very large number of particles composing the liquid. The more particles or elements involved in the simulation, the more computational resources are required to perform the necessary calculations.
+
+It may require several iterations of tine-tuning, in order to obtain a large enough body of water while maintaining the performance under control and the physical simulation reliable. The main approach to achieve this is scaling down the boat and adjusting the masses of the various parts accordingly while tuning the water parameters. However, a long and probably imperfect manual process can be improved, once the first agent is finally deployed in the real environment. By having an accurate digital twin and the sensor data coming from the real environment, it should be possible to automatically tune the parameters of the water to match the effect produced on the sensors over time. This approach, over time, should improve the overall training efficiency. 
+
+The ZibraLiquid plugin doesn't support for Linux. While the team is confident to release it in the future, at the time of writing it is not yet available. This is generally not a favourable factor as traditionally all the software stack for RL runs on Linux. Practically limiting access to computational power.
+
+On the upside, the ZibraAI team offers very rapid and effective support via their Discord channel. They also provide free educational licenses, which facilitate the development of the simulator.
+
+\end{textblock}
+
+% ------------------------------ 3.3 Blender ------------------------------ %
+
+\subsection{Blender}
+\img[\textwidth]{33_blender}{Blender Editor}{}
+{https://www.geofumadas.com/wp-content/uploads/2021/07/blender.jpg}
+
+\begin{textblock}
+Blender is a free and open-source 3D creation suite that offers a wide range of tools for modelling, rendering, animation, and more \cite{blenderdocs}. It is suitable for various media production purposes, including animations, game assets, motion graphics, TV shows, concept art, commercials, and feature films \cite{blenderdocs}. Blender is known for its extensive modelling toolset, which includes features such as sculpting, retopology, and curve modelling\cite{blenderweb}.
+
+In the context of the simulator, Blender has been used to model all assets. The simulator imports models created in Blender. Currently, there are three models of boats available in the simulator. Two of them are modelled after a simple keel, fin and bulb design. These two boats come with two different engine types: a differential engine and a tilt engine.
+
+The third is modelled after the real boat that will be deployed in the port of Garda by the end of the year and aims to become the Digital Twin of the real boat. Features 2 differential engines and a mainly flat keel, with catamaran-like hulls on the side, to improve control.
+
+The bulb keel design and the flat-catamaran hull design, in combination with the two engine types, provide a small starting set of parts that can be combined differently to test various configurations.
+
+\end{textblock}
+
+% ------------------------------ 3.4 Geolocalization ------------------------------ %
+
+\subsection{Geolocalization}
+\img[\textwidth]{34_geolocalization}{Geolocalization and GPS Beacon}{}
+{Background: from the simulator\\Pins:\url{https://www.pngwing.com/}}
+
+\begin{textblock}
+Using the GIS Blender plugin, a coarse but realistic reconstruction of the port of the City of Garda has been made in Blender. This reconstruction utilizes satellite data obtained via Google Maps APIs and includes various elements such as altitude, buildings, roads, and waterways. The plugin allows for the import of 3D models from Google Maps into Blender, providing a convenient way to incorporate real-world geographical data into Blender projects, and allowing for further customization and manipulation.\cite{blendergis}.
+
+In the case of the water part of the map, a manual process was employed to replace it with a real bathymetry of Lake Garda, ensuring an accurate representation of the lake's depths and contours. This manual intervention ensures that the water portion of the scene accurately reflects the characteristics of the actual lake.
+
+By combining the GIS Blender plugin's capabilities with satellite data from Google Maps, the port of the Garda scene in Blender achieves a realistic representation of the geographical features and structures present in that location. This integration of real-world data enhances the visual fidelity and accuracy of the scene, providing a more immersive and authentic experience for users.
+
+The final model, including terrain, altitudes, buildings, satellite images and bathymetry, has been imported inside the Unity3D and the whole scene has been geolocalized using manually placed “GPS Beacons” in various parts of the map, together with precise information about latitude, longitude and altitude. Thanks to the satellite image embedded in the terrain, geolocalizing the scene using this method becomes a trivial task.
+
+The GPS Beacons are part of the newly developed GPS sensor and will be discussed in the next section.
+\end{textblock}
+
+
+% ------------------------------ 3.5 MLAgents ------------------------------ %
+
+\subsection{MLAgents}
+\img[\textwidth]{35_mlagents}{MLAgents example scene}{}
+{\url{https://unity-technologies.github.io/ml-agents/}}
+
+\begin{textblock}
+In recent years, more and more people have adopted the use of MLAgents, an official Unity3D extension developed by former employee Arthur Juliani, for developing reinforcement learning environments, now an official Unity3D plugin. MLAgents provides state-of-the-art machine learning capabilities that allow developers to create intelligent character behaviours in any Unity environment, including games, robotics, and film \cite{mlagentscode}.
+
+MLAgents offers several features out of the box that make it a valuable tool for developing reinforcement learning environments. It provides a C\# SDK that can be integrated into Unity projects, allowing developers to convert any Unity scene into a learning environment for training intelligent agents. With MLAgents, developers can define agents, which are entities that generate observations, take actions, and receive rewards from the environment \cite{mlagentsdocs}.
+
+One of the key benefits of MLAgents is its compatibility with OpenAI Gym, which allows to leverage the extensive ecosystem of reinforcement learning algorithms and techniques available.\cite{mlagentscode}. This compatibility enables easy integration with existing reinforcement learning workflows.
+
+\end{textblock}
+
+% ------------------------------ 3.6 Sensor & Actuators ------------------------------ %
+
+\subsection{Sensor \& Actuators}
+\img[\textwidth]{36_sensorsactuators}{Sensor and actuators. From left to right: engine (pink), GPS(purple), lidar(orange), imu(red), sonar(yellow)
+}{Boat's virtual sensor and actuators}{Source: my simulator}
+
+\begin{textblock}
+All the sensors that have been developed for this project are designed as standalone components, modular, and reusable. They follow the best practices for extending MLAgents, ensuring compatibility and ease of integration.
+
+Having modular and reusable sensors is essential for assembling and customizing new boats with ease. This modular design allows for flexibility in selecting and arranging sensors, adapting them to the unique characteristics and needs of different boats or environments. It simplifies the process of creating custom sensor configurations, without requiring extensive modifications or redesign.
+
+Moreover, the modular and reusable nature of these sensors extends beyond the initial project. They can be utilized as drop-in components in other projects, allowing for efficient knowledge transfer and leveraging existing sensor implementations. This reusability not only saves development time but also promotes collaboration and knowledge sharing within the MLAgents community, enabling developers to build upon and enhance existing sensor functionality.
+
+The list of sensors made available for this project includes:
+\end{textblock}
+
+\begin{itemize}
+
+\item {\bf GPS (Global Position System) }\\
+Provides accurate location information by utilizing a network of satellites. The GPS Sensor also provides the GPS Beacons objects that can be placed in the scene. \\
+Each beacon will read the position of the others and compute the proportion between latitude, longitude, and altitude of the real world and the x, y, and z of the simulator providing an easy way to convert from one to the other and vice-versa.
+Then GPS sensors simply query periodically the beacons and stream the data to the agent.
+
+
+\item {\bf IMU (Inertial Measurement Unit) }\\
+Combines an accelerometer, gyroscope, and magnetometer sensors to measure acceleration, rotation, and orientation. The simulators provide the deltas of rotation and position of the x, y, and z-axis.
+
+
+\item {\bf Compass }\\
+Measures the direction or bearing relative to the Earth's magnetic field. In the simulator, the north pole is extrapolated via GPS data and the angle between the orientation of the boat and the north point is calculated.
+
+
+\item {\bf Sonar }\\
+Utilizes sound waves to measure distances underwater and detect objects. Inside the simulator is realized using ray casting to measure the distance from the seafloor. In this setup the sonar has only 1 ray in front at 30° angle, to detect immense obstacles, the shore and the docks. While the GPS sensor can give clues about the direction to take, the same makes sure that direction is navigable. The sensor is built upon the MLAgents standard sensor RayPerceptionSensor.
+
+
+\item {\bf Lidar (Light Detection and Ranging)  }\\
+Uses laser beams to measure distances and create detailed 3D maps of the surroundings. Inside the simulator, it works in the way of the sonar. The addition of a lidar would allow for collision avoidance which is an essential part of safe autonomous navigation. However, in the case of boats, which are constantly tilting, the lidar sensor can be not as effective.
+
+
+\item {\bf Engine Immersion sensor }\\
+Designed to detect when the boat's engine is outside of the water, is built by using a particle detector provided by Zebra Liquid plugin which counts how many particles of water are in the area of the engine.
+During navigation, especially in the presence of waves, the engines may be exposed, outside of the water. This is an undesirable condition because leaves the boat without control, loses efficiency and the exposed propellers may be dangerous. The simulator correctly scales down the power of the engine proportional to its level of immersion.
+\end{itemize}
+
+
+\newpage

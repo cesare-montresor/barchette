@@ -1,0 +1,156 @@
+\section{Methodology}
+
+
+\begin{textblock}
+The simulator has been built thinking about a series of possible tasks and scenarios and therefore the project supports a variety of different sensor configurations. Also, environmental components, such as the docks and the shore, sensitive to collisions, or the waver generators, can be easily enabled and disabled to obtain all sorts of scenarios. 
+It is a sensible choice to start from the most basic sensor and environment setup and the simplest possible task, to first establish a baseline.
+Establishing a simple first baseline is important to be able to measure the impact of changes to hyperparameters or other aspects of the training.
+\end{textblock}
+% ------------------------------ 4.1 Reward Shaping Techniques ------------------------------ %
+
+\subsection{Reward Shaping Techniques}
+
+
+\begin{textblock}
+Reward shaping in the context of reinforcement learning (RL) refers to the process of modifying the reward signal to facilitate the learning process and improve the performance of RL agents. 
+
+In RL, agents learn to maximize cumulative rewards by interacting with an environment. However, the original reward signal provided by the environment may be sparse or provide insufficient guidance for effective learning. A classic problem that challenged all DRL algorithms before is part of the ALE environments is Montezuma Revenge.
+
+The sparsity of the reward is at the core of the challenge posed by this environment several techniques have been employed to alleviate the problem, among which, are various forms of Reward Shaping \cite{montezumasrevenge2018}
+
+Reward Shaping techniques aim to address this limitation by incorporating additional rewards or penalties based on specific criteria.
+
+In the given scenario, the distance between the boat and the target is used as a negative reward signal. The intention is to discourage the boat from being far away from the target, the negative signal also motivates the agent to finish as fast as possible.
+
+To make the reward signal richer and more dense information, it is divided into concentric rings around the target. Each ring alters the basic reward signal by adding bonuses or penalties. The configuration of these bonuses and penalties, along with their multipliers or fixed values, varies in different experiments. Being in faraway areas from the target is penalized more heavily than being in just far areas. The general sense of this approach is to enrich the reward signal so the agent can sense the difference between "good" and "really good" states or between "bad" and "really bad" states. The objective is to provide a more nuanced reward signal that guides the agent towards optimal behaviour.
+Also, reaching the external borders of the simulators and the surrounding areas has been penalized, a similar approach can be used to encourage the agent to avoid collisions.
+
+By shaping the reward signal in this way, the RL agent can learn to navigate efficiently towards the target while avoiding undesirable areas. This technique helps in achieving better performance and can be applied in various RL domains, including navigation tasks, as shown in the experiment.
+
+I experimented with 4 different types of reward shaping: PLAIN, SQUARED, ADDICTIVE bonus and MULTIPLICATIVE malus. Here are the details of each:
+\end{textblock}
+
+\begin{itemize}
+\item {\bf PLAIN}\\
+The reward is equal to $-(distance)$ providing a linear signal.
+
+\item {\bf SQUARED}\\
+The reward is equal to $-(distance^2)$ providing a non-linear signal that increases very fast with higher distances.
+
+\item {\bf ADDICTIVE}\\
+The reward is computed such as PLAIN plus an additive bonus. The region around the target is divided into 3 rings respectively at 25, 50 and 75 meters. Being within a circle would award a fixed bonus of respectively +0.003, +0.002 and +0.001.
+
+\item {\bf MULTIPLICATIVE}\\
+The reward is computed such as PLAIN plus an additive bonus. The region around the target is divided into 6 concentric rings starting at 20 covering up to 300 meters, each ring having equal width. Each circle has a different multiplier associated starting from the closest to the target: 1, 2, 4, 8, 16, 32. When multiplied by the reward (negative of the distance) acts as a malus, penalizing far away areas much more than closer ones. 
+
+\end{itemize}
+
+% ------------------------------ 4.2 Consideration of Weather Conditions ------------------------------ %
+
+\subsection{Consideration of Weather Conditions}
+
+\begin{textblock}
+The addition of wave generators and the simulation of forces such as water currents can increase the level of difficulty of a task in reinforcement learning (RL) and improve the safety skills of the RL agent. By incorporating wave generators and simulating water currents, the RL agent is exposed to more complex and dynamic environments.
+
+These forces create disturbances and perturbations in the environment, making it more challenging for the agent to maintain stability and achieve its objectives. The RL agent needs to learn how to navigate through the waves, adjust its movements to counteract the wave-induced forces and maintain control of the system.
+
+Simulating water currents further adds to the complexity of the task. Water currents can affect the agent's motion, creating additional resistance or pushing the agent in certain directions. The RL agent must learn to adapt its actions based on the direction and strength of the currents, making navigation more challenging and requiring advanced control strategies.
+
+The system can be utilized by incorporating random variations of episodes during more advanced stages of training. By introducing episodes with wave generators and water currents, the agent can gradually learn to handle these complex conditions and improve its safety manoeuvres and energy-efficient behaviour. This approach allows the agent to gain experience and develop strategies to navigate through waves and currents effectively while optimizing its performance. 
+\end{textblock}
+
+% ------------------------------ 4.3 Task Definition ------------------------------ %
+
+\subsection{Task Definition}
+\img[\textwidth]{41_taskdefinition}{Waypoint navigation task setup}{}
+{from the simulator}
+
+\begin{textblock}
+The goal of this work is to assess the replicability of the simulated scenarios while ensuring that DRL algorithms are capable of learning. I used a task of GPS waypoint navigation with fixed starting positions and rotations. 
+
+The agent is provided with a single GPS waypoint, which consists of latitude and longitude coordinates. The objective is to autonomously navigate from the agent's current location to each of the defined waypoints\cite{waypointwiki}. The agent needs to determine the optimal set of actions and adjust its movements to reach the waypoint as quickly as possible. The fixed positions and rotations in this task allow for controlled testing and evaluation of the agent's navigation capabilities.
+
+This task served as a foundation for testing and refining various configurations of sensor data, reward-shaping techniques, algorithms, and hyperparameters.
+
+The primary DRL algorithm I employed for this phase was REINFORCE. Given the limited computational power, I utilized short training sessions of 100 episodes of 500 steps each, to access the agent under various conditions. By experimenting with different combinations of sensor data, reward shaping techniques, algorithms, and hyperparameters, I aimed to identify the most effective configuration that maximized the agent's navigation capabilities in the GPS waypoint navigation task. This approach enabled us to refine the system and optimize its performance before extending it to handle the more challenging task of GPS waypoint navigation with randomized locations.
+
+All the experiments have been performed using a simple, single fixed random seed chosen randomly by hand. Optimizing and averaging over multiple random seeds, which is a common practice in DRL, aims to improve the performance of the Agent, which however is not the main focus of this work.
+
+In this experimental setup, the choice of use of a single random seed increases the replicability and comparability of the results.
+\end{textblock}
+
+% ------------------------------ 4.4 Action-Space ------------------------------ %
+
+\subsection{Action-Space}
+
+\begin{textblock}
+In the context of Deep Reinforcement Learning (DRL), the choice between a discrete action space and a continuous action space has important implications. Discrete action spaces, which consist of a finite set of actions represented by discrete values or categories, are generally considered preferable to continuous action spaces. This is because discrete action spaces offer simplicity and sample efficiency.
+
+Simplicity is a key advantage of discrete action spaces. They are easier to define and understand compared to continuous action spaces, making it simpler to design and implement the decision-making process of the agent. Discrete actions can be explicitly enumerated, allowing for clear and concise specification of the available actions.
+
+Sample efficiency is another important factor. In DRL, agents learn through interactions with the environment, and discrete action spaces generally require fewer samples for effective learning. With a finite number of discrete actions, the agent can explore and learn the consequences of each action more efficiently. On the other hand, continuous action spaces with infinite possibilities often require a larger number of samples to discover optimal actions \cite{zhu2022}.
+
+Inside the simulator both the engines provided work similarly: a force is applied along the longitudinal axis to the solid representing the engine, then, via rigid body simulation, the force is transferred to the rest of the boat, and applied to the join. 
+\end{textblock}
+
+\begin{itemize}
+
+\item {\bf Tilt Engine }\\
+In the case of the tilt engine, it offers 2 parameters: speed and torque. Speed would determine the amount of force applied to the engine, torque would refer to the angular velocity of the rudder. The engine, when tilting, applies the force to the boat at a different angle, making it turn.
+
+\item {\bf Differential Engine }\\
+In the case of the differential engine, it offers 3 parameters: speed, torque and reverse ratio. While the speed remains the same as in the tilt engine, the torque, together with the reverse ratio, determines the power distribution between the 2 engines, when turning.
+
+\end{itemize}
+
+
+\begin{textblock}
+While it is true that the force applied is fixed and applied in pulses, the intrinsic drag of the boat with the water still yields a smooth result. 
+
+Being the engine's standalone components, they expose methods to perform basic actions and they are independent of the agent. The agent then can combine these basic actions and expose custom action space.
+
+In this way, it is possible to offer a standardized high-level interface to control the boat, but the physical effects of that action will change based on the kind of engine used.
+
+Initial experiments with a size 4 action space, which would provide FORWARD, BACKWARD, LEFT and RIGHT, resulted in the agent randomly alternating between FORWARD and BACKWARD, and the boat not really going anywhere, hindering effective learning and progress in the navigation task. 
+To address this issue, the action space was reduced to 3 actions: FORWARD, FORWARD LEFT, and FORWARD RIGHT. By constraining the agent's actions to primarily move forward, the agent was compelled to make meaningful progress and navigate the environment effectively \cite{kanervisto2020}.
+
+By reducing the action space, the agent's exploration became more focused and directed. This setup encouraged the agent to move forward while still allowing slight deviations to the left or right. Consequently, the agent learned more efficiently and improved its navigation performance \cite{kanervisto2020}.
+
+In summary, discrete action spaces are often preferred in DRL due to their simplicity and sample efficiency. They provide a clear and manageable set of actions for the agent to choose from, enabling more effective learning and decision-making. By shaping the action space appropriately, the agent's training can be improved, leading to better performance in the target task.
+
+While this setup works fine for the given tasks, it might not be appropriate for more complex tasks that may require precise maneuvering, to avoid collisions.
+\end{textblock}
+
+
+
+% ------------------------------ 4.5 State-Space ------------------------------ %
+
+\subsection{State-Space}
+
+\begin{textblock}
+For the current training, the number of inputs has been reduced to four key variables: DISTANCE, COMPASS, LATITUDE, and LONGITUDE. While not being the only sensible configuration, these variables are proven sufficient for the agent to navigate in the environment.
+
+To ensure that the values provided to the agent are within a suitable range, some normalization and relative adjustments have been applied.
+\end{textblock}
+
+
+\begin{itemize}
+
+\item {\bf DISTANCE }\\
+The original distance value is divided by the maximum distance to obtain a relative distance value, denoted as DISTANCE\_REL. Dividing by the maximum distance scales the values to a range between 0 and 1, which helps in training the agent more effectively.
+
+\item {\bf COMPASS }\\
+Initially, the compass value was used as a single input. However, after several attempts, it was decomposed into two values: COMPASS\_SIN and COMPASS\_COS. The decomposition into sine and cosine components allows the agent to capture the direction in a more effective manner. By representing the compass as two values, the agent can better understand the angular relationship between its current heading and the desired direction.
+
+\item {\bf LATITUDE and LONGITUDE }\\
+These geographic coordinates are made relative to the boat's starting point. This relative adjustment is important because it allows the agent to focus on the relative position changes rather than the absolute latitude and longitude values. The adjusted values are denoted as LATITUDE\_REL and LONGITUDE\_REL.
+\end{itemize}
+
+\begin{textblock}
+Overall, the state space provided to the agent consists of five continuous values: DISTANCE\_REL, COMPASS\_SIN, COMPASS\_COS, LATITUDE\_REL, and LONGITUDE\_REL. These normalized and relative values provide the agent with more easy-to-use information to make informed decisions and navigate the environment effectively.
+It's worth noting that the normalization and relative adjustments are crucial steps in preparing the input data for the agent. They ensure that the values are within appropriate ranges and facilitate effective learning and decision-making during the training process\cite{spatialdistance2020}\cite{geolocationml2021}.
+
+\end{textblock}
+
+
+\blankpage

@@ -1,0 +1,140 @@
+\section{Introduction}
+
+% ------------------------------ 1.1 MOTIVES ------------------------------ %
+
+\subsection{Motivations and Objectives}
+
+\begin{textblock}
+In recent years, the field of Machine Learning and Artificial Intelligence has experienced remarkable growth and achieved significant results, largely attributed to the advancements in Deep Neural Networks and back-propagation. One particularly powerful approach that has emerged is Deep Reinforcement Learning (DRL), which has shown versatility and effectiveness across various domains, promising to optimize and automate tasks.
+
+DRL algorithms enable agents to explore and develop sophisticated strategies by establishing long-term correlations between actions and rewards. However, applying these techniques in real-life environments remains a challenge due to the complex nature of real-world data. High dimensionality, unstructured formats, and noise in the data pose difficulties for agents to make sense of the world and extract relevant information for the task at hand.
+
+This thesis focuses on the field of maritime navigation, specifically training autonomous boats to navigate safely using inputs solely from sensors typically found on boats, such as GPS, IMU, compass, and sonar.
+
+Given the cost, time, and complexities associated with real-world boat operations, utilizing simulated environments becomes an attractive choice. Simulated environments provide a cost-effective, efficient, and safe means for the agent to learn the basics of navigation before transitioning to real-world scenarios. This approach parallels the training of aspiring human pilots using flight simulators.
+
+Significant effort has been devoted to creating a realistic physical interaction between the boat, water, and the boat's geometries and masses, as well as simulating sensor responses under various weather conditions. While this project offers the potential to train boats for various complex tasks, such as tracing pollutant sources in multi-agent environments with obstacles, the current experiments are limited to simple way-point navigation using GPS coordinates. These experiments serve as a starting point to evaluate and compare the performance of several DRL for learning this initial task, laying the foundations for future advancements.
+
+The application of Safe Deep Reinforcement Learning (SDRL) algorithms, a fast-growing branch of DRL, is probably the most interesting evolution for this kind of task, probably the latest step before being able to deploy trained agents in real-life, with confidence.
+\end{textblock}
+
+
+% ------------------------------ 1.2 OUTLINE ------------------------------ %
+
+\subsection{Thesis Outline}
+
+This section provides an overview of the main topics covered in each chapter:
+
+\begin{itemize}
+
+\item {\bf Chapter 1: Introduction}\\
+This chapter introduces the project and its objectives, emphasizing the importance of Deep Reinforcement Learning (DRL) in the domain of autonomous boat navigation. It presents the motivation behind the project and outlines the structure of the thesis.
+
+\item {\bf Chapter 2: Background}\\
+This chapter presents the core concepts of RL and DRL. It explains the foundational concepts behind the mathematical formulation of RL and provides a theoretical background for the subsequent chapters.
+
+\item {\bf Chapter 3: Simulator Development}\\
+This chapter analyzed all individual components used in the realization of this project, mentioning each of the tools used, and why they were chosen.
+
+\item {\bf Chapter 4: Methodology}\\
+This chapter focuses on clarifying the goal of the testing. Explains in detail the task used to train the agent. It also gives details on the methodology used to run and access the experiments.
+
+\item {\bf Chapter 5: Experiments and Results}\\
+This chapter focuses on the experimental scenarios, tasks, and evaluation procedures used in the project. It presents the details of the training and evaluation process, including the performance metrics and measures employed. 
+
+\item {\bf Chapter 6: Discussion and Conclusions}\\
+This chapter summarizes and discusses the findings and outcomes of the project. It offers a concise summary of the project's main contributions, implications and limitations of the project and suggests potential future research directions. 
+
+\end{itemize}
+
+% ------------------------------ 1.3 State-of-the-art: DRL Algorithms ------------------------------ %
+
+
+\subsection{State-of-the-art: DRL Algorithms}
+\begin{textblock}
+The current advancements in open-water navigation involve the development of techniques to enable autonomous systems to navigate effectively in unstructured marine environments. This field faces various challenges, such as unpredictable weather conditions, collision avoidance, and path planning. To address these challenges, state-of-the-art approaches combine deep reinforcement learning with perception modules that process data from sensors such as sonar, lidar, and cameras. These approaches leverage advanced neural network architectures, including convolutional neural networks (CNNs) and recurrent neural networks (RNNs), to handle the complexity of marine environments and learn efficient navigation policies. Additionally, advancements in Simultaneous Localization and Mapping (SLAM) techniques contribute to accurate positioning and mapping, further enhancing the navigation capabilities of autonomous systems. 
+
+When it comes to autonomous boat navigation, the focus lies on training boats to navigate safely and efficiently without human intervention. Advanced perception systems, such as GPS, IMU, compass, and sonar, provide crucial information for navigation. Deep reinforcement learning algorithms learn policies that enable boats to make optimal decisions based on the current state and desired objectives while considering safety constraints and environmental factors.
+
+By integrating these advancements in perception, deep reinforcement learning, and navigation algorithms, autonomous boats can navigate open water environments autonomously and safely. Ongoing research continues to refine and improve these techniques, paving the way for widespread applications of autonomous boats in transportation, surveillance, and environmental monitoring. \cite{autonomousvessels2019}\cite{ferreira2020}\cite{christensen2022}\cite{wang2023}\cite{sac2018}
+
+Two prominent algorithms in these domains are Proximal Policy Optimization (PPO)\cite{ppo2017} and Soft Actor-Critic (SAC)\cite{sac2018}. PPO, introduced in 2017, is an on-policy algorithm that has garnered attention for its impressive performance across various domains. It has become a benchmark for comparison in many DRL tasks. SAC, on the other hand, was introduced in 2018 as an off-policy algorithm that combines the benefits of maximum entropy reinforcement learning and off-policy updates. This combination leads to improved stability and sample efficiency.
+
+For this work, I choose PPO as it natively supports discrete actions. In addition to PPO I also made use of REINFORCE as it provides a faster convergence. A more detailed analysis between SAC and PPO and between REINFORCE and PPO can be found in the background chapter.
+\end{textblock}
+
+
+% ------------------------------ 1.4 State-of-the-art: DRL Simulators ------------------------------ %
+
+
+\subsection{State-of-the-art: DRL Simulators}
+
+\begin{textblock}
+Simulators are an integral component of a DRL setup. The use of simulators allows for cheap, safe, fast and repeatable experiments, allowing researchers to efficiently test and iterate on their DRL solutions.
+
+Furthermore, simulators offer unique opportunities. For example, that can be parallelized and the time inside the simulator can be “compressed” allowing for otherwise impossible to achieve results. An exemplary case of this advantage is the numbers reported by the DeepMind team during the training of AlphaStar. The whole training process took 14 days but allowed the agent to gather experience equivalent to 200 years of gameplay.\cite{alphastar2019}
+
+Simulators commonly used as training environments for reinforcement learning algorithms include among others AI Habitat, DeepMind Control Suite, DeepMind Lab, MuJoCo, ROS \& Gazebo, and Unity3D with MLAgents and several others.\cite{neptuneai2023}
+
+\end{textblock}
+
+\begin{itemize}
+
+\item {\bf AI Habitat}\\
+AI Habitat is a virtual embodiment simulator that provides an efficient photo-realistic 3D environment for training RL agents. It aims to enable research in embodied AI by providing realistic environments with various visual and physical properties.\cite{habitat2019}\cite{habitat2021}\cite{aihabitat}
+
+\item {\bf DeepMind Control Suite}\\
+DeepMind Control Suite focuses on continuous control tasks in physics-based simulation environments. It provides a set of benchmark tasks that involve controlling robotic systems to achieve specific goals, such as object manipulation or locomotion.\cite{deepmindcontrolsuite2018}
+
+\item {\bf DeepMind Lab}\\
+DeepMind Lab is a 3D navigation and puzzle-solving simulator developed by DeepMind. It offers a platform for training RL agents in complex environments that require exploration, navigation, and solving cognitive tasks.\cite{deeplab2016}
+
+\item {\bf MuJoCo}\\
+MuJoCo (Multi-Joint dynamics with Contact) is a physics engine that provides a full-featured simulator for modelling complex mechanisms. It is designed for model-based optimization and supports simulation in generalized coordinates with accurate contact dynamics. MuJoCo is known for its speed, accuracy, and modelling  power, making it suitable for applications in robotics, bio-mechanics, graphics, animation, and more. It was acquired by Deep-Mind and made freely available as an open-source project.\cite{mujoco}.
+
+
+\item {\bf ROS and Gazebo}\\
+ROS (Robot Operating System) is a flexible framework for writing robot software. It includes simulation capabilities through packages such as Gazebo. Gazebo is a widely used 3D simulator that provides a realistic environment for simulating robots and their interactions with the surroundings. It supports physics-based simulation, sensor simulation, and visualization. Gazebo is often used in conjunction with ROS for developing and testing robot control algorithms.\cite{ros}\cite{gazebosim}
+
+\item {\bf Unity with MLAgents}\\
+Unity with MLAgents extension offers a framework that combines the Unity game engine with machine learning capabilities. It allows researchers and developers to train agents in Unity's 3D environments using reinforcement learning techniques. MLAgents provides tools for creating and customizing simulation environments, provides basic sensors and actuators, as well as some fully functioning scenes, integrating machine learning algorithms and collecting training data. It also provides ready-to-go SDK and code to make it compatible with other standards, such as ROS2 or Gym.
+The great advantage that only Unity3D offers depends on having been around for a very long time, the first user-friendly and free-to-use 3D game engines available today. Because of this, it has the best possible collections of pre-made plugins and assets.\cite{unity3d}\cite{mlagents}
+
+\end{itemize}
+
+\begin{textblock}
+
+Most simulators used for reinforcement learning, including MuJoCo, ROS with Gazebo, and Unity with MLAgents, focus on simulating physics to some extent. However, it is true that many simulators do not fully simulate complex physical phenomena and often rely on rigid body simulation, especially when it comes to tasks such as robotic arm control. Simulating more complex phenomena such as soft-bodies dynamics (e.g.: water, textiles, smoke) can be challenging and computationally expensive, which is why they are not as commonly simulated in DRL environments.
+
+In the context of maritime navigation, there is a need for a dedicated simulator because boat navigation is a niche field within reinforcement learning. The existing simulators often focus on classic problems such as robotic arms or self-driving cars, which are more widely studied and researched. Therefore, a specific maritime navigation simulator was developed to provide a comprehensive framework for training autonomous boats and ships to navigate safely in open waters. This simulator incorporates realistic physical interaction between the boat, water, and sensor responses in various weather conditions, addressing the unique challenges of boat navigation. The development of such a simulator offers an easily accessible and customizable simulators for training and testing autonomous boat navigation algorithms.
+
+\end{textblock}
+
+\img[\textwidth]{11_simulators}
+{From left to right: AI Habitat, GazeboSim, MuJoCo}
+{AI Habitat, GazeboSim, MuJoCo}
+{
+\url{https://aihabitat.org/} \\
+\url{https://github.com/isri-aist/jvrc_mj_description} \\
+\url{https://gazebosim.com} \\
+}
+
+
+
+% ------------------------------ 1.5 State-of-the-art: Digital Twin ------------------------------ %
+
+\subsection{Digital Twin}
+
+\begin{textblock}
+A Digital Twin is a virtual replica of a physical object or system that spans its life-cycle. Digital twins are focused on specific physical entities or systems, such as machines, buildings, or processes. They aim to provide a real-time, data-driven replica that reflects the behaviour and performance of the physical counterpart. While a simulator can be a Digital Twin, not all simulators aim to model a physical reality. On the contrary, most simulators used today in the context of DLR research are rarely intended as Digital Twins of some physical entity.
+
+Digital twin technology has gained significant traction in recent years and plays a crucial role in the development and testing of autonomous systems, including boats and ships. A digital twin is a virtual representation of a physical object, process, or system that replicates its behaviour and characteristics in a simulated environment. In autonomous boat navigation, a digital twin serves as a virtual counterpart of a real boat, allowing for comprehensive testing, training, and evaluation of navigation algorithms and control systems.
+
+The development of a digital twin for autonomous boat navigation involves creating a realistic simulation of the boat, its physical properties, and the surrounding environment. This includes modelling the boat's dynamics, propulsion systems, sensor inputs, and the behaviour of water, waves, and obstacles. By accurately representing these aspects, the digital twin provides a reliable and safe environment for training and testing autonomous navigation algorithms.
+
+The use of a digital twin offers several advantages. Firstly, it allows for cost-effective and efficient training of autonomous agents, as reduces the need for more expensive and time-consuming real-world experiments. Secondly, it provides a controlled and reproducible environment, enabling researchers to evaluate and compare different algorithms and approaches systematically. Additionally, the digital twin can simulate various scenarios and conditions, including various weather conditions, sea states, and navigational challenges, ensuring that the trained agents are robust and capable of handling real-world situations.
+
+In the context of this thesis, the development of a digital twin for autonomous boat navigation involves integrating accurate physical behaviour of water and waves into the simulator. By incorporating these aspects into the simulator, the digital twin can provide a realistic environment for training and evaluating the autonomous navigation system.
+
+\end{textblock}
+\clearpage

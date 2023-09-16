@@ -1,0 +1,47 @@
+
+% Common Commands
+
+
+\newenvironment{textblock}{
+    \begin{flushleft}
+}{ 
+    \end{flushleft}
+}
+
+\newcommand\blankpage{\newpage \ \newpage}
+
+\newcommand{\img}[5][10cm]{
+    {\centering
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=#1]{#2}
+        \ifthenelse{\isempty{#4}}
+        {\caption{#3}}
+        {\caption[#4]{#3}}
+        \addtocontents{lof}{
+            \begin{textblock} #5 \end{textblock}
+        }
+        \label{ {image:}{#2} }
+    \end{figure}
+    }
+}
+
+
+\newcommand{\tab}[4]{
+    {\centering
+    \begin{table}[H]
+        \centering
+        \begin{tabular}{#3}
+           #4
+           \hline
+        \end{tabular}\\
+        \caption{#2}
+        \label{ {table:}{#1} } 
+        \par
+    \end{table}
+    }
+}
+
+\newcommand{\row}[1]{
+    \hline #1 \\
+}

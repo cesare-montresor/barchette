@@ -1,0 +1,260 @@
+\section{Background}
+
+\begin{textblock}
+The history of reinforcement learning can be traced back to various disciplines. In animal learning, Edward Thorndike introduced the concept of trial-and-error learning in 1911, describing how animals reinforce behaviours that lead to satisfaction and deter behaviours that produce discomfort. 
+
+The Law of Effect, proposed by Thorndike, became a foundational principle for understanding reinforcement in animal psychology\cite{thorndikewiki}. The application of reinforcement learning principles in animal behaviour suggests that animals are capable of learning and optimizing rewards.
+
+Over time, reinforcement learning has evolved and gained significance in various domains. It has been applied in game theory\cite{nowe2012}, control theory\cite{busoniu2018}, operations research\cite{hubbs2020}, information theory\cite{russo2015}, simulation-based optimization\cite{gosavi2018} and multi-agent systems\cite{zhang2019}. In recent years, deep reinforcement learning, which combines RL with deep neural networks, has gained attention for its ability to handle complex environments and achieve remarkable results in domains such as board games and computer games.\cite{alphastar2019}
+\end{textblock}
+
+
+% ------------------------------ 2.1 RL ------------------------------ %
+
+\subsection{Reinforcement Learning}
+
+\begin{textblock}
+Reinforcement learning (RL) in Computer Science is a machine learning paradigm concerned with how intelligent agents can make sequential decisions in an environment to maximize cumulative rewards. Unlike supervised learning that relies on labelled input/output pairs or unsupervised learning that seeks patterns in unlabeled data, RL focuses on finding a balance between exploration (discovering actions that can provide high rewards) and exploitation (leveraging existing knowledge) to optimize long-term rewards.\cite{suttonandbarto2018}\cite{aima2022}
+
+The fundamental parts of a reinforcement learning setup include:
+\end{textblock}
+
+
+\begin{itemize}
+
+\item {\bf Agent}\\
+The agent is the learner or decision-maker in the reinforcement learning system. It interacts with the environment and learns through trial and error to maximize the cumulative reward. The agent takes actions based on the current state and receives feedback in the form of rewards.
+
+\item {\bf Environment}\\
+The environment is the external system with which the agent interacts. It provides the agent with observations (state information) and receives actions from the agent. The environment determines the next state based on the actions taken and provides rewards to the agent accordingly.
+
+\item {\bf State}\\
+The state represents the current situation or configuration of the environment. It captures the relevant information that the agent needs to make decisions. The state can be fully observable or partially observable, depending on whether the agent has access to complete or incomplete information about the environment.
+
+\item {\bf Action}\\
+Actions are the decisions made by the agent based on the observed state. The agent selects actions from a set of available actions according to its policy. The policy defines the agent's behaviour and determines how it maps states to actions.
+
+\item {\bf Reward}\\
+The reward signal is the feedback provided to the agent after each action. It represents the desirability or quality of the agent's actions in a given state. The agent's objective is to maximize the cumulative reward over time. Rewards can be positive, negative, or zero, indicating good, bad, or neutral outcomes, respectively.
+
+\end{itemize}
+
+
+\begin{textblock}
+These fundamental components interact with each other in a cyclic manner. The agent perceives the state from the environment, selects an action based on its policy, and receives a reward from the environment. This process repeats over multiple iterations, allowing the agent to learn and improve its decision-making through trial and error.
+
+It's important to note that reinforcement learning setups can also include additional elements such as a value function, which estimates the expected cumulative reward from a given state, and a model of the environment, which the agent can use for planning and prediction. However, the four components mentioned above (agent, environment, state, and action) form the core elements of a basic reinforcement learning setup.
+\end{textblock}
+
+% ------------------------------ MDP ------------------------------ %
+
+
+
+
+
+\begin{textblock}
+{\bf Markov Decision Process }
+
+\img{21_agent}{The agent–environment interaction in a Markov decision process.}{Reinforcement Learning Cycle}{ Book: Reinforcement Learning An Introduction - Sutton and Barto  }
+
+Reinforcement Learning (RL) is formulated mathematically using the Markov Decision Process (MDP). The agent's goal is to find an optimal policy that maximizes the expected cumulative reward over time. MDPs provide the formal framework for modelling the decision-making problem faced by the agent. 
+
+The MDP assumes the Markov Property, which states that the future state and rewards depend only on the current state and action, and not on the past history. In other words, all the past history is now fully represented in the current state. 
+
+The objective in an MDP is to find a policy $\pi$ that maps each state $s$ to an action $a$ (i.e., $\pi(s) = a$) in order to maximize the expected cumulative reward over time. To further explain, at each time step, the MDP is in a particular state $s \in S$, and the decision maker selects an action $a \in A$ based on the current state. The MDP then transitions to a new state $s'$ according to the probability distribution $P(s' \mid s, a)$. Additionally, the decision maker receives an immediate reward of $R(s, a, s')$ for the transition.
+
+The objective is to find the policy $\pi$ that maximizes the expected cumulative reward. This can be achieved by using various algorithms and techniques, such as value iteration or policy iteration, to iteratively update the value function or the policy until convergence is reached. Here is the mathematical formulation of an MDP \cite{suttonandbarto2018}\cite{aima2022}:
+
+A Markov Decision Process is defined by 4 components:\\
+\begin{center}
+{\large
+\textlangle \ $S, A, P, R$ \textrangle 
+}
+\end{center}
+
+\end{textblock}
+
+\begin{itemize}
+
+\item {\bf $S$ } is the set of states, representing all possible configurations of the system.
+\item {\bf $A$ } is the set of actions, representing all possible actions the agent can take.
+\item {\bf $P$ } is the state transition function $P(s' \mid s, a)$, which specifies the probability of transitioning to state $s'$ given that the system is in state $s$ and the agent takes action $a$.
+\item {\bf $R$ } is the reward function $R(s, a, s')$, which determines the immediate reward received when transitioning from state $s$ to state $s'$ by taking action $a$.
+
+\end{itemize}
+
+\begin{textblock}
+While this is the basic formulation of an MDP, there are variations that extend the basic MDP framework to address specific characteristics or requirements of decision-making problems. Each variation introduces additional complexity and challenges in modelling and solving the corresponding problem.
+\end{textblock}
+
+% ------------------------------ BELLMAN ------------------------------ %
+
+\begin{textblock}
+{\bf Bellman Equation }
+
+The Bellman equation is a recursive equation that relates the value of a state or state-action pair to the expected rewards obtained from taking an action and transitioning to the next state. 
+The Bellman equation plays a crucial role in solving MDPs, it's used to calculate the optimal value function, which in turn helps determine the optimal policy. The Bellman equation allows the agent to update its value estimates iteratively, taking into account the expected rewards and values of future states.
+
+Here is the mathematical formulation of the Bellman Equation \cite{suttonandbarto2018}\cite{aima2022}:
+\end{textblock}
+
+\begin{center}
+{\bf\large
+$ Q(s, a) = E[R(s, a) + \gamma \sum_{s'} P(s' \mid s, a) \max_{a'} Q(s', a')]$
+}
+\end{center}
+    
+
+\begin{itemize}
+
+\item {\bf $ Q(s, a) $ } is the value of taking action $a$ in state $s$.
+\item {\bf $ R(s, a) $ } is the immediate reward received when taking action $a$ in state $s$.
+\item {\bf $\gamma$ } is the discount factor, $a$ value between 0 and 1 that determines the importance of future rewards.
+\item {\bf $ P(s' \mid s, a) $ } is the probability of transitioning to state $s'$ when taking action $a$ in state $s$.
+\item {\bf $ \max_{a'} Q(s', a') $ } represents the maximum Q-value among all possible actions $a'$ in the next state $s'$.
+\end{itemize}
+
+
+\begin{textblock}
+This equation captures the idea of optimizing the Q-values by considering the immediate reward and the expected future rewards. The goal is to find the optimal policy that maximizes the expected cumulative reward over time.
+It's important to note that the specific formulation and notation of the Bellman equation may vary depending on the context and notation used in different resources. The equation presented here is a common representation in the field of reinforcement learning.
+\end{textblock}
+
+
+
+% ------------------------------ 2.2 Deep Reinforcement Learning ------------------------------ %
+
+\subsection{Deep Reinforcement Learning}
+\begin{textblock}
+Deep Reinforcement Learning combines RL with Deep Learning techniques, specifically Deep Neural Networks, to handle complex and high-dimensional state spaces. DRL leverages the representation learning capabilities of DNN to extract meaningful features from raw input data, enabling the agent to learn directly from high-dimensional sensory inputs such as images or audio. The DNN serve as a function approximator to estimate the value function or policy in RL. 
+
+DRL has achieved remarkable successes in various domains, including playing complex games such as AlphaGo\cite{alphago2016} and Atari games\cite{mnih2015}, robotic control\cite{lillicrap2015}, and autonomous driving\cite{bojarski2016}. DRL may require a large number of interactions with the environment to learn effectively, making sample efficiency an important consideration.\cite{horgan2018}\cite{fortunato2017}\cite{mankowitz2019}
+
+The first significant result of DRL was the Deep Q-Network (DQN) that was introduced by researchers at DeepMind in a paper published in 2015 \cite{mnih2015}.
+
+The first DQN was specifically designed and tested on the Arcade Learning Environment (ALE). Introduced in 2013 as a platform for evaluating general AI agents in a wide range of Atari 2600 games. The ALE provided a suite of challenging games with different dynamics and complexities, serving as a benchmark for testing RL algorithms.
+
+The original DNQ implementation included the following features:
+\end{textblock}
+
+\begin{itemize}
+
+\item {\bf DQN Algorithm }\\
+The DQN algorithm combines Q-learning, which is a value-based RL algorithm, with deep neural networks to approximate the action-value function (Q-function) of an RL agent. Instead of using hand-engineered features as inputs. The network takes a state as input and outputs Q-values for each possible action. The agent selects actions based on an epsilon-greedy policy, balancing exploration and exploitation.
+
+\item {\bf Deep Neural Networks }\\
+Thanks to the application of DNN is possible for DQN to directly processes such as pixels from game screens, using deep convolutional neural networks (CNNs)
+
+\item {\bf Experience Replay }\\
+DQN introduced the concept of experience replay, which addresses the issues of data efficiency and sample correlation. Experience replay involves storing the agent's experiences, consisting of state, action, reward, and next-state transitions, in a replay buffer. During training, mini-batches of experiences are sampled randomly from the buffer, enabling the agent to learn from diverse and uncorrelated experiences, leading to more stable learning.
+
+\item {\bf Target Network }\\
+To improve the stability of learning, DQN utilizes a separate target network, which is a copy of the main Q-network. The target network's parameters are updated less frequently, providing more consistent target values during training. This decouples the target estimation from the network's updates and helps mitigate issues caused by the non-stationarity of the targets.
+\end{itemize}
+
+% ------------------------------ 2.3 DRL Algorithms: PPO ------------------------------ %
+
+\subsection{DRL Algorithms: PPO}
+\begin{textblock}
+PPO (Proximal Policy Optimization) incorporates or inherits techniques from various works and methodologies in the field of reinforcement learning. Here is a list of some of the techniques that PPO includes or draws inspiration from
+\end{textblock}
+
+\begin{itemize}
+
+\item {\bf Actor-Critic }\\
+PPO's actor-critic architecture enhances the training stability and performance of the algorithm. By leveraging the strengths of both policy-based and value-based methods, PPO can overcome challenges such as slow progress and poor sample efficiency.
+
+\item {\bf Policy Gradient Methods }\\
+PPO builds upon the foundations of policy gradient methods, which optimize the policy directly by estimating the gradient of the expected return.
+
+\item {\bf Trust Region Policy Optimization (TRPO) }\\
+PPO improves upon TRPO by using a more conservative approach to policy updates, addressing some of the limitations of TRPO.
+
+\item {\bf Clipped Surrogate Objective }\\
+PPO introduces a clipped surrogate objective function, which approximates the performance improvement and constrains the policy update to ensure more stable learning.
+
+\item {\bf Proximal Policy Optimization }\\
+PPO utilizes a proximal policy optimization approach that restricts the policy update to a local region, preventing large policy divergences and ensuring more stable learning.
+
+\item {\bf Adaptive Step Sizes }\\
+PPO dynamically adjusts the step sizes during policy optimization to prevent large policy updates that may disrupt learning and stability.
+
+\item {\bf Value Function Approximation }\\
+PPO can incorporate value function approximation techniques to estimate the state-value function and improve policy performance.
+
+\item {\bf Parallelization }\\
+PPO can leverage parallelization methods, such as running multiple agents or simulations concurrently, to collect more diverse and efficient data for policy updates.
+
+\end{itemize}
+
+
+\begin{textblock}
+These techniques, combined and tailored specifically for PPO, contribute to its effectiveness in reinforcement learning tasks, providing stability, improved sample efficiency, and enhanced performance.
+\end{textblock}
+
+% ------------------------------ 2.4 DRL Algorithms: REINFORCE ------------------------------ %
+\subsection{DRL Algorithms: REINFORCE}
+\begin{textblock}
+The REINFORCE is a Monte Carlo variant of a policy gradient algorithm. The agent collects samples of an episode using its current policy and uses it to update the policy. Since one full trajectory must be completed to construct a sample space, it is updated as an off-policy algorithm.
+
+Here are the main features of the REINFORCE algorithm:
+\end{textblock}
+
+\begin{itemize}
+    
+\item {\bf Policy-based approach}\\
+The REINFORCE algorithm directly learns a policy function, which maps states to actions, without explicitly estimating value functions such as in value-based methods.
+
+\item {\bf Stochastic policy}\\
+REINFORCE uses a stochastic policy that outputs a probability distribution over actions given a state. This allows for exploration and randomness in action selection.
+
+\item {\bf Monte Carlo sampling}\\
+REINFORCE relies on Monte Carlo sampling to estimate the expected return for each state-action pair. It collects trajectories by interacting with the environment, samples actions according to the policy, and computes the gradients based on the obtained rewards.
+
+\item {\bf Policy gradient optimization}\\
+The REINFORCE algorithm updates the policy parameters using gradient ascent on the expected return. It maximizes the expected return by adjusting the policy distribution to favour actions that lead to higher rewards.
+
+\item {\bf Baseline function}\\
+To reduce the variance of the policy gradient estimates, REINFORCE often incorporates a learned baseline function. The baseline is subtracted from the estimated return to reduce the impact of high or low rewards that are not indicative of the policy's quality.
+
+\end{itemize}
+
+
+\begin{textblock}
+These features make the REINFORCE algorithm a flexible and effective method for training agents in various reinforcement learning tasks.
+\end{textblock}
+
+% ------------------------------ 2.5 PPO & REINFORCE: Tradeoffs and Considerations ------------------------------ %
+\subsection{PPO \& REINFORCE Trade-offs }
+
+
+\begin{textblock}
+While the goal is to use PPO (Proximal Policy Optimization), I initially decided to use REINFORCE in the beginning. Despite its shortcomings. Using REINFORCE allows for much faster convergence and enables the execution of a larger number of benchmarks, useful for hyper-parameter tuning. Here are some of the considerations taken into account when making the choice:
+\end{textblock}
+
+\begin{itemize}
+
+\item {\bf Faster Convergence }\\
+REINFORCE is a simple policy gradient algorithm that updates the policy based on the gradients of the expected return. It doesn't involve training a critic network, which is typically done in methods such as PPO. By omitting the training of a critic, the training process becomes computationally less expensive and converges faster. This enables quicker iterations and experimentation with different settings and parameters.
+
+\item {\bf Simplicity}\\
+REINFORCE is a straightforward algorithm that is relatively easy to understand and implement. It doesn't involve complex mechanisms such as trust regions or value function approximation used in PPO. This simplicity allows for a more rapid development and iteration process. It also reduces the time spent on implementation and debugging.
+
+\item {\bf Benchmarking}\\
+By using REINFORCE initially, it becomes feasible to run a larger number of benchmarks to evaluate the performance of the policy. Since REINFORCE converges faster, it allows for more iterations within a given time frame. This increased efficiency in benchmarking enables a better understanding of the strengths and weaknesses of the policy in different scenarios and facilitates the identification of areas for improvement.
+
+\item {\bf Exploration-Exploitation Trade-off}\\
+REINFORCE has a straightforward exploration-exploitation trade-off. It explores the environment by sampling actions according to the current policy, allowing for a diverse range of actions to be tried. This exploration can be particularly useful in the early stages of training when the agent's policy is far from optimal. Once the policy starts converging, exploitation becomes more dominant, and the agent focuses on exploiting the learned policy.
+
+\item {\bf Parallelism (lack of)}\\
+Collecting data from multiple trajectories at once reduces correlation in the dataset. This improves convergence for online learning systems such as neural networks, which work best with. \cite{mnih2016}
+Data collection is faster overall, which improves clock time to obtain the same result. This may make better use of other resources too.\cite{mnih2016}
+Both the simulator and the learning algorithm are computationally demanding. Mostly due to the limitation imposed by the ZibraAI plugin, compiling only on Windows and OSX, making it unsuitable for the Linux cluster typically used by the University of Verona for this kind of project. Thus, at the time of writing, I didn’t have access to the computational resources necessary for leveraging parallelism, which would have most likely reduced significantly the time and the stability of the PPO’s training. Further details on the ZibraLiquid limitations and the hardware setup used, can be found respectively in sections 3.2 and 5.3 of this thesis.
+
+\end{itemize}
+
+\begin{textblock}
+It's important to note that while REINFORCE has advantages in terms of faster convergence and simplicity, it also has limitations such as higher sample complexity and variance. However, in the initial stages of the project, these drawbacks were deemed acceptable given the benefits mentioned above. As the project progresses and more data becomes available, transitioning to more advanced algorithms such as PPO can be considered to further refine the policy and improve performance.
+\end{textblock}
+
+\blankpage

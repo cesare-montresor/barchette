@@ -1,0 +1,45 @@
+% Dependencies
+\usepackage{geometry}
+\usepackage{gensymb}
+\usepackage{graphicx}
+\usepackage[english]{babel}
+\usepackage{newlfont} 
+\usepackage{float}
+\usepackage{gensymb}
+\usepackage{sectsty}
+\usepackage{setspace}
+\usepackage{imakeidx}
+\usepackage{hyperref}
+\usepackage{array}
+\usepackage{biblatex}
+\usepackage{caption}
+\usepackage{csquotes}
+\usepackage{xifthen}
+\usepackage{ragged2e}
+\usepackage{tocloft}
+
+
+
+% \usepackage{subfiles} % import last % https://www.overleaf.com/learn/latex/Multi-file_LaTeX_projects
+% \subfile{sections/introduction}
+
+% Document Settings
+
+\geometry{a4paper, total={14cm,24cm}}
+\renewcommand{\baselinestretch}{1.5} 
+
+\counterwithin{figure}{section}
+\counterwithin{table}{section}
+\graphicspath{ {./img/} }
+
+
+\addbibresource{citations.bib}
+\captionsetup{format=hang}
+\captionsetup{belowskip=-5mm}
+
+
+\setlength{\cftfigindent}{0pt}  % remove indentation from figures in lof
+\setlength{\cfttabindent}{0pt}  % remove indentation from tables in lot
+
+
+\makeindex

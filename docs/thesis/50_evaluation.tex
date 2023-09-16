@@ -1,0 +1,190 @@
+\section{Empirical Evaluation}
+
+% ------------------------------ 5.1 Empirical Methodology ------------------------------ %
+
+\subsection{Empirical Methodology}
+
+
+\begin{textblock}
+This empirical evaluation has several goals, the first is to make sure that the simulator is suitable for training DRL agents. The second goal is to evaluate how reproducible those experiments are, given such a noisy environment.
+
+Given that some tests had to be run,  I decided to make the best use of the training time. I took the opportunity offered by this testing, to explore some of the hyperparameters of the agent: ALGORITHMS, REWARD SHAPING, FREQUENCY UPDATE TARGET NETWORK.
+
+While this remains an empirical test, I hope it will still provide a starting point for future work.
+Each of these settings has been modified independently to observe their impact on the overall performance of the agent.   
+
+The primary performance metric is the average reward of the last 100 episodes. Being a slow signal can compensate for noisy training and still offer a quick way to rate the current configuration. However, for each experiment, I report the rate of successes and failures, which gives a more complete view of the performance as well and it offers a backup metric when testing with different reward shaping techniques, as they artificially alter the main performance metric.
+\end{textblock}
+
+% ------------------------------ 5.2 Empirical Test ------------------------------ %
+\newpage
+
+\subsection{Empirical Test}
+
+\begin{itemize}
+\item {\bf Test 1: ALGORITHMS}\\
+This test aims to compare the capabilities of PPO and REINFORCE for the given task. The testing conditions are 1000 Episodes, 1000 Steps each. Both models are equipped with DNN with 2 hidden layers of 32 nodes each. The target network is updated every 10 episodes. Additionally, PPO will update the Critic model, every 40 Episodes.
+
+\item {\bf Test 2: REWARD SHAPING}\\
+This test aims to have a first evaluation of the 4 Reward Shaping techniques mentioned before. I run some short sessions of 100 Episodes with 500 Steps each. Each experiment is repeated 3 times to assess reproducibility.
+
+\item {\bf Test 3: FREQUENCY UPDATE TARGET NETWORK}\\
+This test aims to have a first evaluation of how changing the frequency of the update of the target network can impact performance. I chose 5, 10 and 15 epochs as samples. I run some short sessions of 100 Episodes with 500 Steps each. Each experiment is repeated 3 times to assess reproducibility.
+
+\end{itemize}
+\newpage
+% ------------------------------ 5.3 Hardware Setup ------------------------------ %
+
+\subsection{Hardware Setup}
+
+\begin{textblock}
+As mentioned, the ZibraLiquid plugin posed the limitation of running on only Windows, which limited access to the Linux clusters for the training.
+Therefore all training has been done using my personal computer at home with the following hardware specifications.
+\end{textblock}
+
+\tab{51_hardwaresetup}{Hardware Setup}{|l|l|}{
+    \row{ CPU & AMD Ryzen 9 5900X, 3700 Mhz, 12 Core, 24 Threads }
+    \row{ RAM & 24Gb }
+    \row{ Disk & 1Tb NVMe }
+    \row{ GPU & Nvidia 3090 }
+    \row{ OS & Windows 10 Pro }
+}
+
+% ------------------------------ 5.4  Presentation and Analysis of the Results------------------------------ %
+
+\subsection{Presentation and Analysis of the Results}
+\begin{textblock}
+
+% ------------------------------ Test 1: ALGORITHMS ------------------------------ %
+{\bf Test 1: ALGORITHMS }
+
+This table summarizes the results of running PPO and REINFORCE over 1000 Episodes, with 1000 steps each. 
+\end{textblock}
+
+\tab{52_test1sum}
+    {Summary of results for PPO and REINFORCE}
+    {|l|r|r|}{
+    \cline{2-3}
+    \multicolumn{1}{c|}{} & PPO & REINFORCE \\
+    \row{ Success & 127 & 636 }
+    \row{ Failures & 617 & 128 }
+    \row{ Average steps last 100  & 833 & 541 }
+    \row{ Average reward & -648 & 373 }
+    \row{ Average reward last 100 & -149 & 803 }
+}
+
+\begin{textblock}
+The following charts provide a clearer overview of the training, which highlights rewards. Averaged reward and Last Step are averaged over the last 100 episodes.
+\end{textblock}
+
+\newpage
+
+\img[\textwidth]{51_test1_ppo}{PPO detailed training plot}{Test 1, Algorithms. PPO training plot}{}
+\img[\textwidth]{52_test1_reinforce}{REINFORCE detailed training chart}{Test 1, Algorithms. REINFORCE training plot}{}
+
+
+\begin{textblock}
+Both algorithms are capable of learning from the simulated environment. REINFORCE shows steady improvement both in terms of Average reward and Number of steps.
+As is clearly represented in the chart by the red line, PPO appears to become unstable in the early phase of training and requires longer training to yield comparable results.
+\end{textblock}
+
+\newpage
+% ------------------------------ Test 2: REWARD SHAPING ------------------------------ %
+\begin{textblock}
+{\bf Test 2: REWARD SHAPING }
+
+This table summarizes the results of running  REINFORCE over 100 Episodes, with 500 Steps each. Each table shows the overall result of each method.
+\end{textblock}
+
+\tab{52_test2sum}
+    {Summary of results for each method used}
+    {|l|r|r|r|}{
+    
+    \cline{2-4}
+    \multicolumn{1}{c|}{PLAIN} & Run 1 & Run 2 & Run 3 \\
+    \row{ Success & 11 & 15 & 16 }
+    \row{ Fail & 7 & 3 & 2 }
+    \hline
+    
+    \multicolumn{4}{c}{} \\
+
+    \cline{2-4}
+    \multicolumn{1}{c|}{SQUARE} & Run 1 & Run 2 & Run 3 \\
+    \row{ Success & 28 & 22 & 27 }
+    \row{ Fail & 3 & 3 & 4 }
+    \hline
+    
+    \multicolumn{4}{c}{} \\
+
+    \cline{2-4}
+    \multicolumn{1}{c|}{MUL} & Run 1 & Run 2 & Run 3 \\
+    \row{ Success & 25 & 29 & 22 }
+    \row{ Fail & 3 & 2 & 4 }
+    \hline
+
+    \multicolumn{4}{c}{} \\
+
+    \cline{2-4}
+    \multicolumn{1}{c|}{ADD} & Run 1 & Run 2 & Run 3 \\
+    \row{ Success & 29 & 26 & 24 }
+    \row{ Fail & 7 & 1 & 2 }
+    \hline
+}
+
+\img[\textwidth]{53_test2_plain}{Training details for method PLAIN}{Test 2, Reward Shaping. PLAIN training plot.}{}
+\img[\textwidth]{54_test2_square}{Training details for method SQUARE}{Test 2, Reward Shaping. SQUARE training plot.}{}
+\img[\textwidth]{55_test2_mul}{Training details for method MUL}{Test 2, Reward Shaping. MUL training plot.}{}
+\img[\textwidth]{56_test2_add}{Training details for method ADD}{Test 2, Reward Shaping. ADD training plot.}{}
+
+
+\begin{textblock}
+The results show that the algorithm can produce overall comparable results, however as shown in the details for each method, the water simulations still appear to introduce some variance in the experiments, despite the water particles always being initialized from the same state. 
+
+This empirical test also shows that despite the agent being provided with a dense reward signal, it may benefit from some form of Reward Shaping.
+\end{textblock}
+
+
+% ------------------------------ Test 3: FREQUENCY UPDATE TARGET NETWORK ------------------------------ %
+\begin{textblock}
+{\bf Test 3: FREQUENCY UPDATE TARGET NETWORK }
+
+This table summarizes the results of running PPO and REINFORCE over 1000 Episodes, with 1000 steps each. Each table shows the overall result of each frequency of update.
+\end{textblock}
+
+\tab{53_test3sum}
+    {Summary of results for each UPDATE frequency}
+    {|l|r|r|r|}{
+
+    \cline{2-4}
+    \multicolumn{1}{c|}{UPDATE 5} & Run 1 & Run 2 & Run 3 \\
+    \row{ Success & 10 & 8 & 9 }
+    \row{ Fail & 15 & 16 & 14 }
+    \hline
+
+    \multicolumn{4}{c}{} \\
+    
+    \cline{2-4}
+    \multicolumn{1}{c|}{UPDATE 10} & Run 1 & Run 2 & Run 3 \\
+    \row{ Success & 11 & 5 & 8 }
+    \row{ Fail & 26 & 26 & 29 }
+    \hline
+
+    \multicolumn{4}{c}{} \\
+    
+    \cline{2-4}
+    \multicolumn{1}{c|}{UPDATE 15} & Run 1 & Run 2 & Run 3 \\
+    \row{ Success & 2 & 2 & 5 }
+    \row{ Fail & 32 & 33 & 34 }
+}
+
+\img[\textwidth]{57_test3_update5}{Training details for frequency UPDATE 5}{Test 3, Network Update. UPDATE 5 training plot.}{}
+\img[\textwidth]{58_test3_update10}{Training details for method UPDATE 10}{Test 3, Network Update. UPDATE 10 training plot.}{}
+\img[\textwidth]{59_test3_update15}{Training details for method UPDATE 15}{Test 3, Network Update. UPDATE 15 training plot.}{}
+
+\begin{textblock}
+The results show that the algorithm is capable of producing stable and comparable results, across multiple runs of the same experiment, showing very small variance.
+
+This empirical test also shows some initial findings that suggest that REINFORCE, in these testing conditions, performs better with a higher update frequency of the target network.
+\end{textblock}
+
+\clearpage

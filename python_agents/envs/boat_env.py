@@ -16,7 +16,7 @@ class BoatNavigation( gym.Env ):
 		self.coords_base = (0,0) # lat, lng
 
 		# If the env_path is given as input override the environment search
-		if not editor_run: env_path = "envs/BoatSimulation/BoatSimulation.exe"
+		if not editor_run: env_path = "envs/Barchette_GardaPort/Barchette_GardaPort.exe"
 		# For the editor build force the path to None and the worker id to 0, 
 		# assigned values for the editor build.
 		else: env_path = None; worker_id = 0

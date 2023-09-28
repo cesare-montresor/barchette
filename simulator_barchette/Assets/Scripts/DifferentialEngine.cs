@@ -19,7 +19,7 @@ public class DifferentialEngine : MonoBehaviour // ActuatorComponent // TODO: lo
 
     public int ParticlesFullspeed = 10;
 
-	private float targetPosition = 0;
+	//private float targetPosition = 0;
 	private Vector3 startPosition;
 	private Quaternion startRotation;
 

@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.MLAgents;
+using UnityEditor;
 
 namespace Unity.MLAgentsExamples
 {
@@ -21,6 +22,8 @@ namespace Unity.MLAgentsExamples
 
         //---
         [Header("Basic setting")]
+        [Tooltip("Reset ZibraAI Lincence.")]
+        public bool resetLicence = false;
         [Tooltip("Eneable global debug flag.")]
         public bool debug = true;
         [Tooltip("Set the target frame rate."), Range(30,144)]
@@ -59,6 +62,16 @@ namespace Unity.MLAgentsExamples
         {
             //Basic
             Application.targetFrameRate = targetFrameRate;
+              
+
+            
+            if (resetLicence && EditorPrefs.HasKey("ZibraLiquidLicenceKey"))
+            {
+                EditorPrefs.DeleteKey("ZibraLiquidLicenceKey");
+                resetLicence = false;
+            }
+            
+            
 
             //Avanced
             if (useAdvancedSettings)

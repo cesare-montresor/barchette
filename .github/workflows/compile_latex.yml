@@ -26,12 +26,13 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
       - run: pwd
-      - run: ls
+      - run: cd ./docs/thesis/
+      - run: pwd
       - name: Compile Document
         uses: xu-cheng/latex-action@v2
         with:
         # The root LaTeX file to be compiled
-         root_file: ./docs/thesis/main.tex
+         root_file: main.tex
          latexmk_shell_escape: true
          extra_system_packages: "gnuplot"
       # Removes the latest release, so that we can create a new one in its place

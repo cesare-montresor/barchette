@@ -31,7 +31,7 @@ jobs:
         uses: xu-cheng/latex-action@v2
         with:
         # The root LaTeX file to be compiled
-         root_file: ./docs/main.tex
+         root_file: docs/main.tex
          latexmk_shell_escape: true
          extra_system_packages: "gnuplot"
       # Removes the latest release, so that we can create a new one in its place

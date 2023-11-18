@@ -4,5 +4,5 @@ A realistic 3D simulator for autonomous boat agents, built in Unity3D and MLAgen
 
 # Documentation
 
-[Latex Thesis](https://docs.google.com/presentation/d/1wnTRC9v_XuyQHBoermuakovyWI3FRx6aCiN0n12sP3k/edit?usp=sharing)
+[Latex Thesis](https://docs.google.com/presentation/d/1wnTRC9v_XuyQHBoermuakovyWI3FRx6aCiN0n12sP3k/edit?usp=sharing)    
 [Google slides](https://docs.google.com/presentation/d/1wnTRC9v_XuyQHBoermuakovyWI3FRx6aCiN0n12sP3k/edit?usp=sharing)

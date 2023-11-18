@@ -38,10 +38,10 @@ jobs:
         uses: ame-yu/action-delete-latest-release@v2
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Release
+      - name: Docs-Thesys Release
         uses: softprops/action-gh-release@v1
         with:
-          files: thesys.pdf
+          files: ./docs/thesis/thesys.pdf
           tag_name: release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -41,7 +41,7 @@ jobs:
       - name: Docs-Thesys Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./docs/thesis/thesys.pdf
+          files: ./docs/thesis/main.pdf
           tag_name: docs_thesys
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

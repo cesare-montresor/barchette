@@ -7,7 +7,7 @@ Two modular engines are provided: a classic rudder-tilt engine and a double diff
 
 # Documentation
 
-Thesis: [Deep Reinforcement Learning for Autonomous Boat Navigation](thesis.pdf) ([latex src](docs/thesis/))    
+Thesis: [Deep Reinforcement Learning for Autonomous Boat Navigation](docs/thesis.pdf) ([latex src](docs/thesis/))    
 
 [Google slides](https://docs.google.com/presentation/d/1wnTRC9v_XuyQHBoermuakovyWI3FRx6aCiN0n12sP3k/edit?usp=sharing)
 
